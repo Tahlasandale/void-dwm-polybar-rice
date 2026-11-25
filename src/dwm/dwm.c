@@ -197,6 +197,8 @@ static void propertynotify(XEvent *e);
 static void quit(const Arg *arg);
 static Monitor *recttomon(int x, int y, int w, int h);
 static void resize(Client *c, int x, int y, int w, int h, int interact);
+static void restartdwm(const Arg *arg);
+static void sighup(int unused);
 static void resizeclient(Client *c, int x, int y, int w, int h);
 static void resizemouse(const Arg *arg);
 static void restack(Monitor *m);
@@ -259,6 +261,7 @@ static int statusw;
 static int statussig;
 static pid_t statuspid = -1;
 static int screen;
+static int restart = 0;
 static int sw, sh;           /* X display screen geometry width, height */
 static int bh;               /* bar height */
 static int lrpad;            /* sum of left and right padding for text */
@@ -1391,6 +1394,21 @@ propertynotify(XEvent *e)
 void
 quit(const Arg *arg)
 {
+	restart = 0;
+	running = 0;
+}
+
+void
+restartdwm(const Arg *arg)
+{
+	restart = 1;
+	running = 0;
+}
+
+void
+sighup(int unused)
+{
+	restart = 1;
 	running = 0;
 }
 
@@ -1723,6 +1741,8 @@ setup(void)
 	sa.sa_flags = SA_NOCLDSTOP | SA_NOCLDWAIT | SA_RESTART;
 	sa.sa_handler = SIG_IGN;
 	sigaction(SIGCHLD, &sa, NULL);
+
+	signal(SIGHUP, sighup);
 
 	/* clean up any zombies (inherited from .xinitrc etc) immediately */
 	while (waitpid(-1, NULL, WNOHANG) > 0);
@@ -2500,5 +2520,7 @@ main(int argc, char *argv[])
 	run();
 	cleanup();
 	XCloseDisplay(dpy);
+	if (restart)
+		execvp(argv[0], argv);
 	return EXIT_SUCCESS;
 }

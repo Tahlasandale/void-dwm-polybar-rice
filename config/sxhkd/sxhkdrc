@@ -8,3 +8,10 @@ Print
 # Historique du presse-papier (Win + Maj + V)
 super + shift + v
     /home/bison/.local/bin/clipboard-history.sh
+
+# Verrouillage d'ecran (Super + L et Alt + L)
+super + l
+    /home/bison/.local/bin/lock.sh
+
+alt + l
+    /home/bison/.local/bin/lock.sh

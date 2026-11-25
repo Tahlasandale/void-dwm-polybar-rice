@@ -8,5 +8,5 @@ import = [
 save_to_clipboard = true
 
 [window]
-opacity = 1.0
+opacity = 0.88
 padding = { x = 10, y = 10 }

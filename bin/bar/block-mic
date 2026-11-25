@@ -65,7 +65,7 @@ esac
 
 # Affichage
 if pw_muted || alsa_muted; then
-    printf "%%{F#f38ba8}%%{T6}󰍭%%{T-}%%{F-} Muet%%{F-}\n"
+    printf "%%{F#6c7086}%%{T6}󰍭%%{T-}%%{F-} Muet%%{F-}\n"
     exit 0
 fi
 
@@ -79,4 +79,4 @@ elif [ -n "$CARD" ]; then
     VOL=$(amixer -c "$CARD" sget Capture 2>/dev/null | grep -m1 -o '\[[0-9]*%\]' | tr -d '[]%')
 fi
 [ -z "$VOL" ] && VOL=100
-printf "%%{F#a6e3a1}%%{T6}󰍬%%{T-}%%{F-} %-3s%%%%{F-}\n" "$VOL"
+printf "%%{F#89b4fa}%%{T6}󰍬%%{T-}%%{F-} %-3s%%%%{F-}\n" "$VOL"

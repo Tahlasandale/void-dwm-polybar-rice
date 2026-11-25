@@ -37,9 +37,9 @@ if [ "$IS_WIRELESS" -eq 1 ]; then
 
     if [ -n "$SSID" ]; then
         SHORT_SSID=$(echo "$SSID" | cut -c1-14)
-        printf "%%{F#a6e3a1}%%{T6}󰖩%%{T-}%%{F-} %14s%%{F-}\n" "$SHORT_SSID"
+        printf "%%{F#89b4fa}%%{T6}󰖩%%{T-}%%{F-} %14s%%{F-}\n" "$SHORT_SSID"
     else
-        printf "%%{F#a6e3a1}%%{T6}󰖩%%{T-}%%{F-} %14s%%{F-}\n" "Connecté"
+        printf "%%{F#89b4fa}%%{T6}󰖩%%{T-}%%{F-} %14s%%{F-}\n" "Connecté"
     fi
 else
     # Interface filaire Ethernet reelle

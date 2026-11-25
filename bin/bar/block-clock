@@ -21,4 +21,4 @@ case "${BLOCK_BUTTON:-0}" in
 esac
 
 TIME_STR=$(date '+%H:%M')
-printf "%%{F#cba6f7}%%{T6}󰥔%%{T-}%%{F-} %s%%{F-}\n" "$TIME_STR"
+printf "%%{F#89b4fa}%%{T6}󰥔%%{T-}%%{F-} %s%%{F-}\n" "$TIME_STR"

@@ -27,7 +27,7 @@ if os.path.exists(mode_file):
 
 bats = glob.glob('/sys/class/power_supply/BAT*')
 if not bats:
-    print(' ' + f'{"AC":>5}' + '%{F-}')
+    print('%{F#6c7086} ' + f'{"AC":>5}' + '%{F-}')
     exit(0)
 
 bat = bats[0]
@@ -77,14 +77,7 @@ else:
     icon = f'{base_icon}'
     time_str = 'AC'
 
-if status == 'Discharging' and capacity <= 20:
-    color = '#f38ba8'
-elif status == 'Charging' or status in ('Full', 'Plugged'):
-    color = '#94e2d5'
-elif capacity <= 50:
-    color = '#f9e2af'
-else:
-    color = '#a6e3a1'
+color = '#89b4fa'
 
 def tag(text):
     return '%{F' + color + '}%{T6}' + text + '%{T-}%{F-}'

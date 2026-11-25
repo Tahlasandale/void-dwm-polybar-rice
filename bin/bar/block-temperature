@@ -38,7 +38,7 @@ if [ "$TEMP" -ge 75 ]; then
 elif [ "$TEMP" -ge 60 ]; then
     COLOR="#f9e2af"
 else
-    COLOR="#a6e3a1"
+    COLOR="#89b4fa"
 fi
 
 printf "%%{F%s}%%{T6}󰔏%%{T-}%%{F-} %-3d°C%%{F-}\n" "$COLOR" "$TEMP"

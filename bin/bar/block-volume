@@ -59,7 +59,7 @@ if command -v pamixer >/dev/null 2>&1; then
             printf "%%{F#6c7086}%%{T6}󰝟%%{T-}%%{F-} %-3d%%%%{F-}\n" 0
             exit 0
         fi
-        printf "%%{F#a6e3a1}%%{T6}%s%%{T-}%%{F-} %-3d%%%%{F-}\n" "$ICON" "$VOL"
+        printf "%%{F#89b4fa}%%{T6}%s%%{T-}%%{F-} %-3d%%%%{F-}\n" "$ICON" "$VOL"
         exit 0
     fi
 fi
@@ -88,7 +88,7 @@ if command -v wpctl >/dev/null 2>&1; then
             printf "%%{F#6c7086}%%{T6}󰝟%%{T-}%%{F-} %-3d%%%%{F-}\n" 0
             exit 0
         fi
-        printf "%%{F#a6e3a1}%%{T6}%s%%{T-}%%{F-} %-3d%%%%{F-}\n" "$ICON" "$VOL"
+        printf "%%{F#89b4fa}%%{T6}%s%%{T-}%%{F-} %-3d%%%%{F-}\n" "$ICON" "$VOL"
         exit 0
     fi
 fi
@@ -117,4 +117,4 @@ if [ -n "$OUT" ]; then
     exit 0
 fi
 
-printf "%%{F#a6e3a1}%%{T6}󰕾%%{T-}%%{F-} %-3d%%%%{F-}\n" 50
+printf "%%{F#89b4fa}%%{T6}󰕾%%{T-}%%{F-} %-3d%%%%{F-}\n" 50

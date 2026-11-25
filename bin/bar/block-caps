@@ -13,7 +13,7 @@ STATE=$(xset q 2>/dev/null | sed -n 's/.*Caps Lock: *\([a-z]*\).*/\1/p' | head -
 [ -z "$STATE" ] && STATE=$(xset q 2>/dev/null | awk '/Caps Lock:/ {print $4; exit}')
 
 if [ "$STATE" = "on" ]; then
-    printf "%%{F#a6e3a1}%%{T6}󰪛%%{T-}%%{F-}\n"
+    printf "%%{F#89b4fa}%%{T6}󰪛%%{T-}%%{F-}\n"
 else
     printf "%%{F#6c7086}%%{T6}󰪛%%{T-}%%{F-}\n"
 fi

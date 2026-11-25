@@ -1,8 +1,9 @@
 #!/bin/sh
-if [ -z "$XDG_RUNTIME_DIR" ]; then export XDG_RUNTIME_DIR="/tmp/run-user-1000"; fi
-# ~/.local/bin/bar/block-bluetooth — Bluetooth status and control
+if [ -z "$XDG_RUNTIME_DIR" ]; then export XDG_RUNTIME_DIR="/tmp/run-user-$(id -u)"; fi
+
+# ~/.local/bin/bar/block-bluetooth — Statut et controle Bluetooth
 case "${BLOCK_BUTTON:-0}" in
-    1) # Clic gauche : toggle alimentation
+    1) # Clic gauche : toggle alimentation Bluetooth
         if bluetoothctl show 2>/dev/null | grep -q "Powered: yes"; then
             bluetoothctl power off >/dev/null 2>&1 || true
         else
@@ -10,8 +11,12 @@ case "${BLOCK_BUTTON:-0}" in
         fi
         polybar-msg action "#bluetooth.exec" >/dev/null 2>&1 || true
         ;;
-    3) # Clic droit : ouvrir le terminal interactif bluetoothctl
-        alacritty -T "Bluetooth Manager" -e bluetoothctl &
+    3) # Clic droit : ouvrir le gestionnaire graphique blueman ou fallback terminal
+        if command -v blueman-manager >/dev/null 2>&1; then
+            blueman-manager &
+        else
+            alacritty -T "Bluetooth Manager" -e bluetoothctl &
+        fi
         ;;
 esac
 
@@ -25,10 +30,12 @@ SHOW=$(bluetoothctl show 2>/dev/null || true)
 if echo "$SHOW" | grep -q "Powered: yes"; then
     CON=$(bluetoothctl devices Connected 2>/dev/null | head -n 1 | cut -d' ' -f3- || true)
     if [ -n "$CON" ]; then
-        printf " %s\n" "$(echo "$CON" | cut -c1-16)"
+        # Afficher l icone et le nom du peripherique connecte
+        printf " %s\n" "$(echo "$CON" | cut -c1-14)"
     else
         printf "\n"
     fi
 else
+    # Eteint : icone estompee
     printf "%%{F#6c7086}%%{F-}\n"
 fi

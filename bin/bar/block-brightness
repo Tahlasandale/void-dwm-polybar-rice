@@ -34,4 +34,4 @@ fi
 # Fallback gracieux (ex: VM sans contrôleur matériel de rétroéclairage)
 [ -z "$PERC" ] && PERC=100
 
-printf " %d%%\n" "$PERC"
+printf "%%{T1}󰃠%%{T-} %d%%\n" "$PERC"

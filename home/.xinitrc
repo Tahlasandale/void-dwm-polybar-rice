@@ -37,11 +37,6 @@ if command -v picom >/dev/null 2>&1; then
     picom -b --backend glx 2>/dev/null || picom -b --backend xrender 2>/dev/null || true
 fi
 
-# Gestionnaire de notifications Dunst
-if command -v dunst >/dev/null 2>&1; then
-    dunst &
-fi
-
 # Fond d'ecran Catppuccin Mocha Dark
 WALLPAPER="$HOME/Images/wallpapers/vibrant-gate.png"
 if [ ! -f "$WALLPAPER" ]; then
@@ -60,4 +55,4 @@ fi
 libinput-gestures &
 clipmenud &
 sxhkd &
-exec dbus-run-session dwm
+exec dbus-run-session sh -c 'dbus-update-activation-environment --all; dunst & exec dwm'

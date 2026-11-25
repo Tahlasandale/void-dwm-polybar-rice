@@ -9,7 +9,6 @@ case "${BLOCK_BUTTON:-0}" in
             syncthing --no-browser &
         fi
         sleep 0.5
-        polybar-msg action "#syncthing.exec" >/dev/null 2>&1 || true
         ;;
     3)
         if ! pgrep -x syncthing >/dev/null 2>&1; then

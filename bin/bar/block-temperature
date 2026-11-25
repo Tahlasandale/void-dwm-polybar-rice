@@ -41,4 +41,4 @@ else
     COLOR="#a6e3a1"
 fi
 
-printf "%%{F%s}%%{T6}󰔏%%{T-}%%{F-} %d°C\n" "$COLOR" "$TEMP"
+printf "%%{F%s}%%{T6}󰔏%%{T-}%%{F-} %-3d°C%%{F-}\n" "$COLOR" "$TEMP"

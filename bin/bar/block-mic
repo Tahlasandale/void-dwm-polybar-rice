@@ -22,10 +22,6 @@ alsa_muted() {
     [ -n "$CARD" ] && amixer -c "$CARD" sget Capture 2>/dev/null | grep -q '\[off\]'
 }
 
-refresh() {
-    polybar-msg action "#mic.exec" >/dev/null 2>&1 || true
-}
-
 case "${BLOCK_BUTTON:-${BUTTON:-0}}" in
     1) # Clic gauche = mute / unmute (PipeWire + ALSA synchronises)
         if pw_muted || alsa_muted; then
@@ -43,7 +39,6 @@ case "${BLOCK_BUTTON:-${BUTTON:-0}}" in
                 wpctl set-mute @DEFAULT_SOURCE@ 1 >/dev/null 2>&1 || true
             fi
         fi
-        refresh
         ;;
     4) # Molette haut = +5%
         if command -v pamixer >/dev/null 2>&1; then
@@ -53,7 +48,6 @@ case "${BLOCK_BUTTON:-${BUTTON:-0}}" in
         elif [ -n "$CARD" ]; then
             amixer -c "$CARD" sset Capture 5%+ >/dev/null 2>&1 || true
         fi
-        refresh
         ;;
     5) # Molette bas = -5%
         if command -v pamixer >/dev/null 2>&1; then
@@ -63,7 +57,6 @@ case "${BLOCK_BUTTON:-${BUTTON:-0}}" in
         elif [ -n "$CARD" ]; then
             amixer -c "$CARD" sset Capture 5%- >/dev/null 2>&1 || true
         fi
-        refresh
         ;;
     3) # Clic droit = mixeur
         alacritty -T "Mixeur Micro" -e alsamixer &
@@ -72,7 +65,7 @@ esac
 
 # Affichage
 if pw_muted || alsa_muted; then
-    printf "%%{F#f38ba8}%%{T6}󰍭%%{T-}%%{F-}\n"
+    printf "%%{F#f38ba8}%%{T6}󰍭%%{T-}%%{F-} Muet%%{F-}\n"
     exit 0
 fi
 
@@ -86,4 +79,4 @@ elif [ -n "$CARD" ]; then
     VOL=$(amixer -c "$CARD" sget Capture 2>/dev/null | grep -m1 -o '\[[0-9]*%\]' | tr -d '[]%')
 fi
 [ -z "$VOL" ] && VOL=100
-printf "%%{F#a6e3a1}%%{T6}󰍬%%{T-}%%{F-} %s%%\n" "$VOL"
+printf "%%{F#a6e3a1}%%{T6}󰍬%%{T-}%%{F-} %-3s%%%%{F-}\n" "$VOL"

@@ -11,7 +11,7 @@ DEV=$(ip -4 route show default 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="de
 
 if [ -z "$DEV" ]; then
     # Aucun acces reseau
-    printf "%%{F#6c7086}%%{T6}󰤭%%{T-}%%{F-}\n"
+    printf "%%{F#6c7086}%%{T6}󰤭%%{T-}%%{F-} %14s%%{F-}\n" "Off"
     exit 0
 fi
 
@@ -36,12 +36,12 @@ if [ "$IS_WIRELESS" -eq 1 ]; then
     fi
 
     if [ -n "$SSID" ]; then
-        SHORT_SSID=$(echo "$SSID" | cut -c1-18)
-        printf "%%{F#a6e3a1}%%{T6}󰖩%%{T-}%%{F-} %s\n" "$SHORT_SSID"
+        SHORT_SSID=$(echo "$SSID" | cut -c1-14)
+        printf "%%{F#a6e3a1}%%{T6}󰖩%%{T-}%%{F-} %14s%%{F-}\n" "$SHORT_SSID"
     else
-        printf "%%{F#a6e3a1}%%{T6}󰖩%%{T-}%%{F-} Connecté\n"
+        printf "%%{F#a6e3a1}%%{T6}󰖩%%{T-}%%{F-} %14s%%{F-}\n" "Connecté"
     fi
 else
     # Interface filaire Ethernet reelle
-    printf "%%{F#89b4fa}%%{T6}󰈀%%{T-}%%{F-} %s\n" "$DEV"
+    printf "%%{F#89b4fa}%%{T6}󰈀%%{T-}%%{F-} %14s%%{F-}\n" "$DEV"
 fi

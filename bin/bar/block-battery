@@ -10,7 +10,6 @@ case "${BLOCK_BUTTON:-0}" in
         else
             echo "percent" > "$MODE_FILE"
         fi
-        polybar-msg action "#battery.exec" >/dev/null 2>&1 || true
         ;;
 esac
 
@@ -28,7 +27,7 @@ if os.path.exists(mode_file):
 
 bats = glob.glob('/sys/class/power_supply/BAT*')
 if not bats:
-    print(' AC')
+    print(' ' + f'{"AC":>5}' + '%{F-}')
     exit(0)
 
 bat = bats[0]
@@ -76,7 +75,7 @@ elif status in ('Full', 'Plugged') or capacity >= 99:
     time_str = 'Plein'
 else:
     icon = f'{base_icon}'
-    time_str = 'Secteur'
+    time_str = 'AC'
 
 if status == 'Discharging' and capacity <= 20:
     color = '#f38ba8'
@@ -90,8 +89,6 @@ else:
 def tag(text):
     return '%{F' + color + '}%{T6}' + text + '%{T-}%{F-}'
 
-if mode == 'time' and time_str:
-    print(f'{tag(icon)} {time_str}')
-else:
-    print(f'{tag(icon)} {capacity}%')
+value = time_str if (mode == 'time' and time_str) else f'{capacity}%'
+print(f'{tag(icon)} {value:>5}%{{F-}}')
 " 2>/dev/null || printf ""

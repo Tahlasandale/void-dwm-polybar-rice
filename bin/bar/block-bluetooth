@@ -9,7 +9,6 @@ case "${BLOCK_BUTTON:-0}" in
         else
             bluetoothctl power on >/dev/null 2>&1 || true
         fi
-        polybar-msg action "#bluetooth.exec" >/dev/null 2>&1 || true
         ;;
     3) # Clic droit : ouvrir le gestionnaire graphique blueman ou fallback terminal
         if command -v blueman-manager >/dev/null 2>&1; then
@@ -31,7 +30,7 @@ if echo "$SHOW" | grep -q "Powered: yes"; then
     CON=$(bluetoothctl devices Connected 2>/dev/null | head -n 1 | cut -d' ' -f3- || true)
     if [ -n "$CON" ]; then
         # Afficher l icone et le nom du peripherique connecte
-        printf "%%{F#89b4fa}%%{T6}󰂯%%{T-}%%{F-} %s\n" "$(echo "$CON" | cut -c1-14)"
+        printf "%%{F#89b4fa}%%{T6}󰂯%%{T-}%%{F-}\n"
     else
         printf "%%{F#89b4fa}%%{T6}󰂯%%{T-}%%{F-}\n"
     fi

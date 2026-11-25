@@ -1,0 +1,3 @@
+# Ctrl+Shift+V : menu presse-papiers (session courante, en attendant le prochain login)
+"/home/bison/.local/bin/clipboard-menu.sh"
+    control+shift+v

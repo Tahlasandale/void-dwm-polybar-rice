@@ -1,0 +1,12 @@
+[general]
+import = [
+  "~/.config/alacritty/colors.toml",
+  "~/.config/alacritty/font.toml"
+]
+
+[selection]
+save_to_clipboard = true
+
+[window]
+opacity = 1.0
+padding = { x = 10, y = 10 }

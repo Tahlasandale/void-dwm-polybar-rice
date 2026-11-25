@@ -1,0 +1,59 @@
+# ~/.bash_aliases — sourced by ~/.bashrc
+
+# eza (remplace ls) avec icones Nerd Font + couleurs Catppuccin Mocha
+alias ls='eza --icons=auto --group-directories-first'
+alias l='eza -1 --icons=auto --group-directories-first'
+alias ll='eza -lh --icons=auto --group-directories-first --git'
+alias la='eza -lah --icons=auto --group-directories-first --git'
+alias lt='eza --tree --level=2 --icons=auto --group-directories-first'
+
+# bat (remplace cat) avec theme Catppuccin Mocha
+alias cat='bat --paging=never'
+
+# clear = effacer + resume systeme
+alias clear='clear && minifetch'
+
+# --- Navigation clavier : fd + fzf + cd ---
+# cdd = ouvre fzf sur les dossiers de $HOME, puis cd sur celui choisi.
+# (fd = binaire local ~/.local/bin/fd ; sur une machine neuve, le reinstaller)
+cd_to_dir() {
+    local selected_dir
+    selected_dir=$(fd --type d --absolute-path --max-depth 5 \
+                        --exclude node_modules --exclude target \
+                        . "$HOME" \
+                  | fzf --height 50% --reverse \
+                        --preview 'eza --tree --level=2 --color=always --icons=auto --group-directories-first {}')
+    # Echap ou liste vide -> on ne bouge pas
+    [ -n "$selected_dir" ] && cd "$selected_dir"
+}
+alias cdd='cd_to_dir'
+
+# Antigravity CLI
+alias agy-y='agy --dangerously-skip-permissions'
+
+# Claw Code CLI (ultraworkers/claw-code)
+alias claw='/home/bison/claw-code/rust/target/debug/claw'
+alias claw-y='/home/bison/claw-code/rust/target/debug/claw --dangerously-skip-permissions'
+
+# Thot 📜 (Harness d'Agent IA v2)
+alias thot='/home/bison/Documents/dev/harness/thotv2/bin/thot'
+
+# --- Docker a la demande (On-Demand) ---
+docker() {
+    if ! systemctl is-active --quiet docker; then
+        echo "Demarrage automatique du service Docker..."
+        sudo systemctl start docker
+    fi
+    command docker "$@"
+}
+
+# --- Recherche DuckDuckGo dans w3m ---
+wwww() {
+    if [ -z "$1" ]; then
+        w3m "https://lite.duckduckgo.com"
+    else
+        local query="${*// /+}"
+        w3m "https://lite.duckduckgo.com/lite/?q=${query}"
+    fi
+}
+

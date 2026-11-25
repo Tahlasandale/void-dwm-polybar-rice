@@ -1,0 +1,10 @@
+# Capture d'ecran (Win + Maj + S et Print)
+super + shift + s
+    /home/bison/.local/bin/screenshot-area.sh
+
+Print
+    /home/bison/.local/bin/screenshot-area.sh
+
+# Historique du presse-papier (Win + Maj + V)
+super + shift + v
+    /home/bison/.local/bin/clipboard-history.sh

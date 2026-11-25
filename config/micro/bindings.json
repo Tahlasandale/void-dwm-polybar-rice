@@ -1,0 +1,16 @@
+{
+    "Alt-/": "lua:comment.comment",
+    "Alt-d": "command:lsp goto-definition",
+    "Alt-k": "command:lsp hover",
+    "Alt-l": "command:lsp format",
+    "Alt-n": "command:lsp rename",
+    "Alt-o": "command:fzf",
+    "Alt-r": "command:lsp find-references",
+    "Alt-s": "command:lsp document-symbols",
+    "Alt-t": "command:lsp goto-typedefinition",
+    "CtrlSpace": "command:lsp autocomplete",
+    "CtrlUnderscore": "lua:comment.comment",
+    "F2": "command:tree",
+    "F5": "command:wc",
+    "Tab": "lua:initlua.smartTab"
+}

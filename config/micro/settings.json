@@ -1,0 +1,11 @@
+{
+    "autoclose": false,
+    "clipboard": "terminal",
+    "colorscheme": "catppuccin-mocha-transparent",
+    "pluginrepos": [
+        "https://raw.githubusercontent.com/dalekirkwood/markdown-autocomplete/main/repo.json"
+    ],
+    "statusformatl": "$(filename) $(modified)($(line),$(col)) | $(initlua.wordcount)",
+    "autosave": 1,
+    "reload": "auto"
+}

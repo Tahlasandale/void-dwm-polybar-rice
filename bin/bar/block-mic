@@ -1,0 +1,60 @@
+#!/bin/sh
+if [ -z "$XDG_RUNTIME_DIR" ]; then export XDG_RUNTIME_DIR="/tmp/run-user-1000"; fi
+# ~/.local/bin/bar/block-mic — Microphone (Capture ALSA / PipeWire)
+
+case "${BLOCK_BUTTON:-${BUTTON:-0}}" in
+    1) # Clic gauche = toggle mute
+        if command -v pamixer >/dev/null 2>&1 && pamixer --default-source -t >/dev/null 2>&1; then
+            :
+        else
+            amixer sset Capture toggle >/dev/null 2>&1
+        fi
+        polybar-msg action "#mic.exec" >/dev/null 2>&1 || true
+        ;;
+    4) # Molette haut = +5%
+        if command -v pamixer >/dev/null 2>&1 && pamixer --default-source -i 5 >/dev/null 2>&1; then
+            :
+        else
+            amixer sset Capture 5%+ >/dev/null 2>&1
+        fi
+        polybar-msg action "#mic.exec" >/dev/null 2>&1 || true
+        ;;
+    5) # Molette bas = -5%
+        if command -v pamixer >/dev/null 2>&1 && pamixer --default-source -d 5 >/dev/null 2>&1; then
+            :
+        else
+            amixer sset Capture 5%- >/dev/null 2>&1
+        fi
+        polybar-msg action "#mic.exec" >/dev/null 2>&1 || true
+        ;;
+    3) # Clic droit = table de mixage
+        pavucontrol 2>/dev/null || alsamixer 2>/dev/null &
+        ;;
+esac
+
+# Detection du statut muet et volume
+IS_MUTED=0
+VOL=""
+
+if command -v pamixer >/dev/null 2>&1 && pamixer --default-source --get-volume >/dev/null 2>&1; then
+    if [ "$(pamixer --default-source --get-mute 2>/dev/null)" = "true" ]; then
+        IS_MUTED=1
+    fi
+    P_VOL=$(pamixer --default-source --get-volume 2>/dev/null)
+    [ -n "$P_VOL" ] && VOL="${P_VOL}%"
+fi
+
+if [ -z "$VOL" ]; then
+    AMIX_OUT=$(amixer get Capture 2>/dev/null)
+    if echo "$AMIX_OUT" | grep -q "\[off\]"; then
+        IS_MUTED=1
+    fi
+    VOL=$(echo "$AMIX_OUT" | grep -m1 -o "\[[0-9]*%\]" | tr -d '[]')
+    [ -z "$VOL" ] && VOL="100%"
+fi
+
+if [ "$IS_MUTED" -eq 1 ]; then
+    printf "%%{F#f38ba8}%%{F-}\n"
+else
+    printf " %s\n" "$VOL"
+fi

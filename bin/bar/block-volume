@@ -1,0 +1,75 @@
+#!/bin/sh
+if [ -z "$XDG_RUNTIME_DIR" ]; then export XDG_RUNTIME_DIR="/tmp/run-user-1000"; fi
+# ~/.local/bin/bar/block-volume — Volume sonore (PipeWire / ALSA)
+case "${BLOCK_BUTTON:-${BUTTON:-0}}" in
+    1) # Clic gauche = toggle mute
+        if command -v pamixer >/dev/null 2>&1 && pamixer -t 2>/dev/null; then
+            :
+        else
+            amixer sset Master toggle >/dev/null 2>&1
+        fi
+        polybar-msg action "#volume.exec" >/dev/null 2>&1 || true
+        ;;
+    4) # Molette haut = +5%
+        if command -v pamixer >/dev/null 2>&1 && pamixer -i 5 2>/dev/null; then
+            :
+        else
+            amixer sset Master 5%+ >/dev/null 2>&1
+        fi
+        polybar-msg action "#volume.exec" >/dev/null 2>&1 || true
+        ;;
+    5) # Molette bas = -5%
+        if command -v pamixer >/dev/null 2>&1 && pamixer -d 5 2>/dev/null; then
+            :
+        else
+            amixer sset Master 5%- >/dev/null 2>&1
+        fi
+        polybar-msg action "#volume.exec" >/dev/null 2>&1 || true
+        ;;
+    3) # Clic droit = mixeur graphique / ncurses
+        alacritty -T "Mixeur Audio" -e alsamixer &
+        ;;
+esac
+
+# 1. Tentative pamixer
+if command -v pamixer >/dev/null 2>&1; then
+    MUTE=$(pamixer --get-mute 2>/dev/null || echo "error")
+    if [ "$MUTE" != "error" ]; then
+        if [ "$MUTE" = "true" ]; then
+            printf "\n"
+            exit 0
+        fi
+        VOL=$(pamixer --get-volume 2>/dev/null || echo "0")
+        if [ "$VOL" -ge 70 ]; then
+            ICON=""
+        elif [ "$VOL" -ge 30 ]; then
+            ICON=""
+        else
+            ICON=""
+        fi
+        printf "%s %s%%\n" "$ICON" "$VOL"
+        exit 0
+    fi
+fi
+
+# 2. Fallback ALSA pur
+OUT=$(amixer sget Master 2>/dev/null || true)
+if [ -n "$OUT" ]; then
+    STATE=$(echo "$OUT" | grep -m1 -o '\[on\]\|\[off\]' | tr -d '[]' || echo "on")
+    if [ "$STATE" = "off" ]; then
+        printf "\n"
+        exit 0
+    fi
+    VOL=$(echo "$OUT" | grep -m1 -o '[0-9]*%' | tr -d '%' || echo "0")
+    if [ "$VOL" -ge 70 ]; then
+        ICON=""
+    elif [ "$VOL" -ge 30 ]; then
+        ICON=""
+    else
+        ICON=""
+    fi
+    printf "%s %s%%\n" "$ICON" "$VOL"
+    exit 0
+fi
+
+printf "\n"

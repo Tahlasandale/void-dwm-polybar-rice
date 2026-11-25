@@ -1,0 +1,5 @@
+#!/bin/sh
+# chafa local (extracted from Void package, no root needed)
+OPT="$HOME/.local/opt"
+LD_LIBRARY_PATH="$OPT/chafa-1.18.3_1/usr/lib:$OPT/libchafa-1.18.3_1/usr/lib:$OPT/libavif-1.4.2_1/usr/lib:$OPT/rav1e-0.6.6_3/usr/lib:$OPT/libsvt-av1-4.3.0_1/usr/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" \
+exec "$OPT/chafa-1.18.3_1/usr/bin/chafa" "$@"

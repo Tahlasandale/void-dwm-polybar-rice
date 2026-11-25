@@ -1,0 +1,76 @@
+#!/bin/sh
+# ~/.local/bin/nicotine-theme — Moteur de bascule instantanee Dark <-> E-Ink
+set -eu
+
+if [ -z "${DISPLAY:-}" ]; then
+    NEWEST_SOCK=$(ls -t /tmp/.X11-unix/X* 2>/dev/null | head -n 1 || true)
+    if [ -n "$NEWEST_SOCK" ]; then
+        DISP_NUM=$(basename "$NEWEST_SOCK" | sed 's/^X//')
+        export DISPLAY=":${DISP_NUM}"
+    else
+        export DISPLAY=":0"
+    fi
+fi
+
+STATE_FILE="$HOME/.cache/nicotine-theme"
+CURRENT=$(cat "$STATE_FILE" 2>/dev/null || echo "dark")
+
+TARGET="${1:-toggle}"
+if [ "$TARGET" = "toggle" ]; then
+    if [ "$CURRENT" = "dark" ]; then
+        TARGET="eink"
+    else
+        TARGET="dark"
+    fi
+elif [ "$TARGET" = "restore" ]; then
+    TARGET="$CURRENT"
+fi
+
+mkdir -p "$HOME/.cache"
+echo "$TARGET" > "$STATE_FILE"
+
+# 1. Alacritty : rechargement de palette a chaud via symlink
+mkdir -p "$HOME/.config/alacritty/themes"
+if [ "$TARGET" = "eink" ]; then
+    ln -sf "$HOME/.config/alacritty/themes/eink.toml" "$HOME/.config/alacritty/colors.toml"
+else
+    ln -sf "$HOME/.config/alacritty/themes/catppuccin-mocha.toml" "$HOME/.config/alacritty/colors.toml"
+fi
+touch "$HOME/.config/alacritty/alacritty.toml" 2>/dev/null || true
+
+# 2. Dunst : rechargement de configuration a chaud via symlink et dunstctl
+mkdir -p "$HOME/.config/dunst"
+if [ "$TARGET" = "eink" ]; then
+    ln -sf "$HOME/.config/dunst/dunstrc-eink" "$HOME/.config/dunst/dunstrc"
+else
+    ln -sf "$HOME/.config/dunst/dunstrc-dark" "$HOME/.config/dunst/dunstrc"
+fi
+if command -v dunstctl >/dev/null 2>&1; then
+    dunstctl reload 2>/dev/null || true
+fi
+
+# 3. Polybar : bascule de la palette de couleurs
+mkdir -p "$HOME/.config/polybar/themes"
+if [ -f "$HOME/.config/polybar/themes/${TARGET}.ini" ]; then
+    ln -sf "$HOME/.config/polybar/themes/${TARGET}.ini" "$HOME/.config/polybar/colors.ini"
+    if [ -x "$HOME/.config/polybar/launch.sh" ]; then
+        "$HOME/.config/polybar/launch.sh" &
+    fi
+fi
+
+# 4. Fond d'ecran : application d'un wallpaper du dossier correspondant (dark/ ou eink/)
+if [ -x "$HOME/.local/bin/next-wallpaper.sh" ]; then
+    "$HOME/.local/bin/next-wallpaper.sh" 2>/dev/null || true
+elif [ "$TARGET" = "eink" ]; then
+    xsetroot -solid "#f5f4ed" 2>/dev/null || true
+else
+    xsetroot -solid "#1e1e2e" 2>/dev/null || true
+fi
+
+# 5. dwmblocks (compatibilite si actif)
+pkill -RTMIN+7 dwmblocks 2>/dev/null || true
+
+# 6. Notification visuelle
+if command -v notify-send >/dev/null 2>&1; then
+    notify-send -u normal -t 2500 "Thème actif" "Mode : $(echo "$TARGET" | tr '[:lower:]' '[:upper:]')" 2>/dev/null || true
+fi

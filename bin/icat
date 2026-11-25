@@ -1,0 +1,19 @@
+#!/bin/sh
+# icat — Affichage d'images dans le terminal via chafa (TrueColor 24-bit)
+
+if [ $# -eq 0 ]; then
+    echo "Usage: icat <image1> [image2...]"
+    exit 1
+fi
+
+for img in "$@"; do
+    if [ -f "$img" ]; then
+        chafa --symbols=half --colors=full --align=center "$img"
+    elif [ -d "$img" ]; then
+        for subimg in "$img"/*.png "$img"/*.jpg "$img"/*.jpeg "$img"/*.webp "$img"/*.gif; do
+            [ -f "$subimg" ] && chafa --symbols=half --colors=full --align=center "$subimg"
+        done
+    else
+        echo "icat: '$img': fichier introuvable" >&2
+    fi
+done

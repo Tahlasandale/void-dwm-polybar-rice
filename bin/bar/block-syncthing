@@ -1,0 +1,27 @@
+#!/bin/sh
+if [ -z "$XDG_RUNTIME_DIR" ]; then export XDG_RUNTIME_DIR="/tmp/run-user-1000"; fi
+# Syncthing
+case "${BLOCK_BUTTON:-0}" in
+    1)
+        if pgrep -x syncthing >/dev/null 2>&1; then
+            pkill -x syncthing 2>/dev/null || true
+        else
+            syncthing --no-browser &
+        fi
+        sleep 0.5
+        polybar-msg action "#syncthing.exec" >/dev/null 2>&1 || true
+        ;;
+    3)
+        if ! pgrep -x syncthing >/dev/null 2>&1; then
+            syncthing --no-browser &
+            sleep 1
+        fi
+        firefox "http://localhost:8384" &
+        ;;
+esac
+
+if pgrep -x syncthing >/dev/null 2>&1; then
+    printf "\n"
+else
+    printf ""
+fi

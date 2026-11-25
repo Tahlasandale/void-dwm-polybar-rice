@@ -1,0 +1,106 @@
+#!/usr/bin/env python3
+import os, sys, glob, subprocess
+
+# 1. Détection des couleurs du thème actif
+theme = "dark"
+theme_file = os.path.expanduser("~/.cache/nicotine-theme")
+if os.path.exists(theme_file):
+    try:
+        with open(theme_file, "r") as f:
+            theme = f.read().strip()
+    except Exception:
+        pass
+
+if theme == "eink":
+    nb = "#f5f4ed"
+    nf = "#1a1a1a"
+    sb = "#1a1a1a"
+    sf = "#f5f4ed"
+else: # dark (Catppuccin Mocha)
+    nb = "#1e1e2e"
+    nf = "#cdd6f4"
+    sb = "#94e2d5"
+    sf = "#1e1e2e"
+
+# 2. Indexation des applications (.desktop)
+apps = {}
+search_dirs = [
+    "/usr/share/applications/*.desktop",
+    os.path.expanduser("~/.local/share/applications/*.desktop")
+]
+
+for pattern in search_dirs:
+    for f in glob.glob(pattern):
+        name = None
+        exec_cmd = None
+        comment = None
+        nodisplay = False
+        try:
+            with open(f, "r", errors="ignore") as fp:
+                for line in fp:
+                    line = line.strip()
+                    if line == "[Desktop Entry]":
+                        continue
+                    if line.startswith("[") and line.endswith("]"):
+                        break
+                    if line.startswith("Name=") and not name:
+                        name = line.split("=", 1)[1].strip()
+                    elif line.startswith("Comment=") and not comment:
+                        comment = line.split("=", 1)[1].strip()
+                    elif line.startswith("GenericName=") and not comment:
+                        comment = line.split("=", 1)[1].strip()
+                    elif line.startswith("Exec=") and not exec_cmd:
+                        cmd = line.split("=", 1)[1].strip()
+                        cmd = cmd.split("%")[0].strip()
+                        exec_cmd = cmd
+                    elif line == "NoDisplay=true":
+                        nodisplay = True
+            if name and exec_cmd and not nodisplay:
+                display_label = f"{name} ({comment})" if comment else name
+                apps[display_label] = exec_cmd
+        except Exception:
+            pass
+
+# 3. Tri avec priorité aux applications clés
+priority_apps = ["Firefox", "Devin", "Alacritty", "Obsidian", "LocalSend", "Yazi", "Micro", "htop", "btop", "nmtui", "alsamixer"]
+sorted_names = []
+for p in priority_apps:
+    for k in list(apps.keys()):
+        if p.lower() in k.lower() and k not in sorted_names:
+            sorted_names.append(k)
+
+for k in sorted(apps.keys()):
+    if k not in sorted_names:
+        sorted_names.append(k)
+
+input_data = "\n".join(sorted_names)
+
+# 4. Invocation de dmenu MAX
+subprocess.run(["pkill", "-x", "dmenu"], stderr=subprocess.DEVNULL)
+
+dmenu_cmd = [
+    os.path.expanduser("~/.local/bin/dmenu"),
+    "-c",
+    "-l", "14",
+    "-i",
+    "-p", "Applications:",
+    "-nb", nb,
+    "-nf", nf,
+    "-sb", sb,
+    "-sf", sf
+]
+
+proc = subprocess.Popen(dmenu_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
+stdout, _ = proc.communicate(input=input_data)
+
+choice = stdout.strip()
+if not choice:
+    sys.exit(0)
+
+# 5. Exécution de l'application ou commande saisie
+if choice in apps:
+    run_cmd = apps[choice]
+else:
+    run_cmd = choice
+
+subprocess.Popen(run_cmd, shell=True, start_new_session=True)

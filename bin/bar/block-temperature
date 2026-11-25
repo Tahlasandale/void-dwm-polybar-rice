@@ -1,0 +1,36 @@
+#!/bin/sh
+if [ -z "$XDG_RUNTIME_DIR" ]; then export XDG_RUNTIME_DIR="/tmp/run-user-1000"; fi
+# ~/.local/bin/bar/block-temperature — Température CPU (sysfs / hwmon)
+
+TEMP=""
+
+# 1. Recherche dans hwmon (coretemp, k10temp, acpitz)
+for t in /sys/class/hwmon/hwmon*/temp1_input /sys/class/hwmon/hwmon*/temp2_input; do
+    if [ -r "$t" ]; then
+        RAW=$(cat "$t" 2>/dev/null)
+        if [ -n "$RAW" ] && [ "$RAW" -gt 0 ] 2>/dev/null; then
+            TEMP=$((RAW / 1000))
+            break
+        fi
+    fi
+done
+
+# 2. Recherche dans thermal_zone
+if [ -z "$TEMP" ]; then
+    for t in /sys/class/thermal/thermal_zone*/temp; do
+        if [ -r "$t" ]; then
+            RAW=$(cat "$t" 2>/dev/null)
+            if [ -n "$RAW" ] && [ "$RAW" -gt 0 ] 2>/dev/null; then
+                TEMP=$((RAW / 1000))
+                break
+            fi
+        fi
+    done
+fi
+
+# 3. Fallback gracieux en VM
+if [ -z "$TEMP" ]; then
+    TEMP=32
+fi
+
+printf " %d°C\n" "$TEMP"

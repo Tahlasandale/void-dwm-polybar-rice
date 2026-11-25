@@ -1,0 +1,85 @@
+#!/bin/sh
+if [ -z "$XDG_RUNTIME_DIR" ]; then export XDG_RUNTIME_DIR="/tmp/run-user-1000"; fi
+# Batterie intelligente : calcul pourcentage / temps restant et jauge
+MODE_FILE="$HOME/.cache/dwm-battery-mode"
+case "${BLOCK_BUTTON:-0}" in
+    1)
+        CUR=$(cat "$MODE_FILE" 2>/dev/null || echo "percent")
+        if [ "$CUR" = "percent" ]; then
+            echo "time" > "$MODE_FILE"
+        else
+            echo "percent" > "$MODE_FILE"
+        fi
+        polybar-msg action "#battery.exec" >/dev/null 2>&1 || true
+        ;;
+esac
+
+python3 -c "
+import os, glob
+
+mode_file = os.path.expanduser('~/.cache/dwm-battery-mode')
+mode = 'percent'
+if os.path.exists(mode_file):
+    try:
+        with open(mode_file) as f:
+            mode = f.read().strip()
+    except Exception:
+        pass
+
+bats = glob.glob('/sys/class/power_supply/BAT*')
+if not bats:
+    print(' AC')
+    exit(0)
+
+bat = bats[0]
+def read_val(name, default='0'):
+    p = os.path.join(bat, name)
+    if os.path.exists(p):
+        try:
+            with open(p) as f:
+                return f.read().strip()
+        except Exception:
+            pass
+    return default
+
+status = read_val('status', 'Unknown')
+capacity = int(read_val('capacity', '0'))
+charge_now = int(read_val('charge_now', read_val('energy_now', '0')))
+charge_full = int(read_val('charge_full', read_val('energy_full', '0')))
+current_now = int(read_val('current_now', read_val('power_now', '0')))
+
+icons = ['', '', '', '', '']
+icon_idx = min(4, max(0, capacity // 20))
+base_icon = icons[icon_idx]
+
+time_str = ''
+if status == 'Discharging':
+    icon = base_icon
+    if current_now > 0:
+        h = charge_now / current_now
+        hours = int(h)
+        mins = int((h - hours) * 60)
+        time_str = f'{hours}h{mins:02d}m'
+    else:
+        time_str = f'{capacity}%'
+elif status == 'Charging':
+    icon = f'{base_icon} '
+    if current_now > 0:
+        h = max(0, charge_full - charge_now) / current_now
+        hours = int(h)
+        mins = int((h - hours) * 60)
+        time_str = f'{hours}h{mins:02d}m'
+    else:
+        time_str = f'{capacity}%'
+elif status in ('Full', 'Plugged') or capacity >= 99:
+    icon = f'{base_icon} '
+    time_str = 'Plein'
+else:
+    icon = f'{base_icon} '
+    time_str = 'Secteur'
+
+if mode == 'time' and time_str:
+    print(f'{icon} {time_str}')
+else:
+    print(f'{icon} {capacity}%')
+" 2>/dev/null || printf ""

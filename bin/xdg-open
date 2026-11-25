@@ -1,0 +1,30 @@
+#!/bin/sh
+# ~/.local/bin/xdg-open — wrapper minimal pour X11/dwm (pas de xdg-utils installé)
+set -eu
+
+if [ $# -eq 0 ]; then
+    echo "usage: xdg-open <fichier|URL>" >&2
+    exit 1
+fi
+
+# Yazi masque DISPLAY pour forcer Chafa : le retrouver ici pour les applis GUI
+export DISPLAY="${YAZI_DISPLAY:-${DISPLAY:-:0}}"
+
+case "$1" in
+    http://*|https://*|mailto:*)
+        exec firefox "$@"
+        ;;
+esac
+
+if command -v gio >/dev/null 2>&1 && gio open "$@" 2>/dev/null; then
+    exit 0
+fi
+
+case "$1" in
+    *.png|*.jpg|*.jpeg|*.webp|*.gif)
+        exec feh "$@"
+        ;;
+    *)
+        exec firefox "$@"
+        ;;
+esac

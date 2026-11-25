@@ -1,0 +1,38 @@
+#!/bin/sh
+if [ -z "$XDG_RUNTIME_DIR" ]; then export XDG_RUNTIME_DIR="/tmp/run-user-1000"; fi
+# ~/.local/bin/bar/block-media — Media player status
+STATUS=""
+TITLE=""
+ARTIST=""
+
+if command -v playerctl >/dev/null 2>&1; then
+    STATUS=$(playerctl status 2>/dev/null || true)
+    if [ -n "$STATUS" ] && [ "$STATUS" != "Stopped" ]; then
+        ARTIST=$(playerctl metadata artist 2>/dev/null || true)
+        TITLE=$(playerctl metadata title 2>/dev/null || true)
+    fi
+fi
+
+if [ -z "$TITLE" ] && command -v mpc >/dev/null 2>&1; then
+    if mpc status 2>/dev/null | grep -q "\[playing\]\|\[paused\]"; then
+        TITLE=$(mpc current 2>/dev/null || true)
+    fi
+fi
+
+if [ -n "$TITLE" ]; then
+    if [ -n "$ARTIST" ]; then
+        TEXT="$ARTIST - $TITLE"
+    else
+        TEXT="$TITLE"
+    fi
+    if [ ${#TEXT} -gt 14 ]; then
+        TEXT="$(echo "$TEXT" | cut -c1-12)..."
+    fi
+    if [ "$STATUS" = "Paused" ]; then
+        printf " %s\n" "$TEXT"
+    else
+        printf " %s\n" "$TEXT"
+    fi
+else
+    printf ""
+fi

@@ -1,0 +1,18 @@
+#!/bin/sh
+if [ -z "$XDG_RUNTIME_DIR" ]; then export XDG_RUNTIME_DIR="/tmp/run-user-1000"; fi
+# Wi-Fi / Reseau
+case "${BLOCK_BUTTON:-0}" in
+    3) alacritty -e nmtui & ;; # clic droit = nmtui
+esac
+
+WIFI_DEV=$(grep ":" /proc/net/wireless 2>/dev/null | cut -d: -f1 | tr -d ' ' || true)
+if [ -n "$WIFI_DEV" ] && command -v iwgetid >/dev/null 2>&1; then
+    SSID=$(iwgetid -r 2>/dev/null || true)
+    if [ -n "$SSID" ]; then
+        printf " %s\n" "$SSID"
+        exit 0
+    fi
+fi
+
+# Pas d'IP dans la barre : juste l'icône réseau
+printf "󰈀\n"

@@ -1,0 +1,32 @@
+#!/bin/sh
+# Bascule ou sélection de police terminal pour Alacritty (à chaud)
+TARGET="$1"
+FONTS_DIR="$HOME/.config/alacritty/fonts"
+ACTIVE_LINK="$HOME/.config/alacritty/font.toml"
+
+CUR=$(readlink -f "$ACTIVE_LINK" 2>/dev/null || echo "")
+
+if [ -z "$TARGET" ]; then
+    if echo "$CUR" | grep -q "maple"; then
+        TARGET="jetbrains"
+    else
+        TARGET="maple"
+    fi
+fi
+
+case "$TARGET" in
+    maple|maple-mono)
+        ln -sf "$FONTS_DIR/maple-mono.toml" "$ACTIVE_LINK"
+        echo "Police terminal active : Maple Mono NF"
+        command -v notify-send >/dev/null 2>&1 && notify-send -i font "Alacritty" "Police : Maple Mono NF"
+        ;;
+    jetbrains|jetbrains-mono)
+        ln -sf "$FONTS_DIR/jetbrains-mono.toml" "$ACTIVE_LINK"
+        echo "Police terminal active : JetBrainsMono Nerd Font"
+        command -v notify-send >/dev/null 2>&1 && notify-send -i font "Alacritty" "Police : JetBrainsMono Nerd Font"
+        ;;
+    *)
+        echo "Usage: term-font [maple | jetbrains]"
+        exit 1
+        ;;
+esac

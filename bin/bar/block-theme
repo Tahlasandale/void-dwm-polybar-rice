@@ -1,0 +1,13 @@
+#!/bin/sh
+if [ -z "$XDG_RUNTIME_DIR" ]; then export XDG_RUNTIME_DIR="/tmp/run-user-1000"; fi
+# Indicateur et bascule de theme
+case "${BLOCK_BUTTON:-0}" in
+    1) ~/.local/bin/nicotine-theme toggle ;; # Clic gauche = bascule
+esac
+
+CUR=$(cat "$HOME/.cache/nicotine-theme" 2>/dev/null || echo "dark")
+if [ "$CUR" = "eink" ]; then
+    printf "[EINK]\n"
+else
+    printf "[DARK]\n"
+fi

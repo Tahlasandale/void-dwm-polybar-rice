@@ -8,6 +8,7 @@ case "${BLOCK_BUTTON:-0}" in
         else
             bluetoothctl power on >/dev/null 2>&1 || true
         fi
+        polybar-msg action "#bluetooth.exec" >/dev/null 2>&1 || true
         ;;
     3) # Clic droit : ouvrir le terminal interactif bluetoothctl
         alacritty -T "Bluetooth Manager" -e bluetoothctl &
@@ -29,5 +30,5 @@ if echo "$SHOW" | grep -q "Powered: yes"; then
         printf "\n"
     fi
 else
-    printf ""
+    printf "%%{F#6c7086}%%{F-}\n"
 fi

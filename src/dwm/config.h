@@ -10,7 +10,7 @@ static const int usealtbar          = 1;        /* 1 means use non-dwm status ba
 static const char *altbarclass      = "Polybar"; /* Alternate bar class name */
 static const char *alttrayname      = "tray";    /* Polybar tray instance name */
 static const char *altbarcmd        = "$HOME/.config/polybar/launch.sh"; /* Alternate bar launch command */
-static const int bottombarheight    = 28;       /* hauteur de la barre Polybar basse */
+static const int bottombarheight    = 0;       /* hauteur de la barre Polybar basse */
 static const char *fonts[]          = { "JetBrainsMono Nerd Font:size=10", "monospace:size=10" };
 static const char dmenufont[]       = "JetBrainsMono Nerd Font:size=10";
 

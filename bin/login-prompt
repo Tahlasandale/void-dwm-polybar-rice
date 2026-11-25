@@ -1,0 +1,15 @@
+#!/bin/bash
+clear
+[ -f /etc/issue ] && cat /etc/issue
+echo ""
+printf "\033[1;36m╭─────────────────────────────────────────────────────────────╮\033[0m\n"
+printf "\033[1;36m│\033[0m  Session par défaut : \033[1;32mbison\033[0m                                  \033[1;36m│\033[0m\n"
+printf "\033[1;36m│\033[0m  Appuyez sur \033[1m[Entrée]\033[0m pour lancer la session \033[1;32mbison\033[0m          \033[1;36m│\033[0m\n"
+printf "\033[1;36m│\033[0m  Ou tapez \033[1;31mroot\033[0m pour basculer sur la console d'administration \033[1;36m│\033[0m\n"
+printf "\033[1;36m╰─────────────────────────────────────────────────────────────╯\033[0m\n"
+echo ""
+
+read -r -p "▶ Utilisateur [bison] : " USER_INPUT
+[ -z "$USER_INPUT" ] && USER_INPUT="bison"
+
+exec /bin/login "$USER_INPUT"

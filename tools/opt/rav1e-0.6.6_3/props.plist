@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>architecture</key>
+	<string>x86_64</string>
+	<key>homepage</key>
+	<string>https://crates.io/crates/rav1e</string>
+	<key>installed_size</key>
+	<integer>7817316</integer>
+	<key>license</key>
+	<string>BSD-2-Clause</string>
+	<key>maintainer</key>
+	<string>oreo639 &lt;oreo6391@gmail.com&gt;</string>
+	<key>pkgname</key>
+	<string>rav1e</string>
+	<key>pkgver</key>
+	<string>rav1e-0.6.6_3</string>
+	<key>provides</key>
+	<array>
+		<string>cmd:rav1e-0.6.6_3</string>
+	</array>
+	<key>run_depends</key>
+	<array>
+		<string>libgcc&gt;=4.4.0_1</string>
+		<string>glibc&gt;=2.39_1</string>
+	</array>
+	<key>shlib-provides</key>
+	<array>
+		<string>librav1e.so.0.6</string>
+	</array>
+	<key>shlib-requires</key>
+	<array>
+		<string>ld-linux-x86-64.so.2</string>
+		<string>libc.so.6</string>
+		<string>libgcc_s.so.1</string>
+		<string>libm.so.6</string>
+	</array>
+	<key>short_desc</key>
+	<string>Fastest and safest AV1 encoder</string>
+	<key>source-revisions</key>
+	<string>rav1e:712c15c3472</string>
+	<key>version</key>
+	<string>0.6.6_3</string>
+</dict>
+</plist>

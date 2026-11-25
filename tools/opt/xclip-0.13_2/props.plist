@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>architecture</key>
+	<string>x86_64</string>
+	<key>homepage</key>
+	<string>https://github.com/astrand/xclip</string>
+	<key>installed_size</key>
+	<integer>40163</integer>
+	<key>license</key>
+	<string>GPL-2.0-or-later</string>
+	<key>maintainer</key>
+	<string>Steven R &lt;dev@styez.com&gt;</string>
+	<key>pkgname</key>
+	<string>xclip</string>
+	<key>pkgver</key>
+	<string>xclip-0.13_2</string>
+	<key>run_depends</key>
+	<array>
+		<string>libXmu&gt;=1.0.4_1</string>
+		<string>libX11&gt;=1.2_1</string>
+		<string>glibc&gt;=2.32_1</string>
+	</array>
+	<key>shlib-requires</key>
+	<array>
+		<string>libXmu.so.6</string>
+		<string>libX11.so.6</string>
+		<string>libc.so.6</string>
+	</array>
+	<key>short_desc</key>
+	<string>Command line interface to the X11 clipboard</string>
+	<key>source-revisions</key>
+	<string>xclip:5603e19405</string>
+	<key>version</key>
+	<string>0.13_2</string>
+</dict>
+</plist>

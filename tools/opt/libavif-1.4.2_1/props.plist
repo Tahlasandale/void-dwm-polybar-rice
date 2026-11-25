@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>architecture</key>
+	<string>x86_64</string>
+	<key>build-options</key>
+	<string>dav1d rav1e svt </string>
+	<key>changelog</key>
+	<string>https://raw.githubusercontent.com/AOMediaCodec/libavif/main/CHANGELOG.md</string>
+	<key>homepage</key>
+	<string>https://github.com/AOMediaCodec/libavif</string>
+	<key>installed_size</key>
+	<integer>957745</integer>
+	<key>license</key>
+	<string>BSD-2-Clause</string>
+	<key>maintainer</key>
+	<string>Leah Neukirchen &lt;leah@vuxu.org&gt;</string>
+	<key>pkgname</key>
+	<string>libavif</string>
+	<key>pkgver</key>
+	<string>libavif-1.4.2_1</string>
+	<key>provides</key>
+	<array>
+		<string>cmd:avifdec-1.4.2_1</string>
+		<string>cmd:avifenc-1.4.2_1</string>
+		<string>cmd:avifgainmaputil-1.4.2_1</string>
+	</array>
+	<key>run_depends</key>
+	<array>
+		<string>libsvt-av1&gt;=4.0.1_1</string>
+		<string>libaom&gt;=3.4.0_1</string>
+		<string>glibc&gt;=2.41_1</string>
+		<string>libdav1d&gt;=1.3.0_1</string>
+		<string>libgcc&gt;=4.4.0_1</string>
+		<string>gdk-pixbuf&gt;=2.22.0_1</string>
+		<string>glib&gt;=2.86.0_1</string>
+		<string>libjpeg-turbo&gt;=1.3.0_2</string>
+		<string>libpng&gt;=1.6.2_1</string>
+		<string>rav1e&gt;=0.6.3_1</string>
+		<string>libstdc++&gt;=4.4.0_1</string>
+		<string>libxml2&gt;=2.7.0_1</string>
+	</array>
+	<key>shlib-provides</key>
+	<array>
+		<string>libavif.so.16</string>
+	</array>
+	<key>shlib-requires</key>
+	<array>
+		<string>libSvtAv1Enc.so.4</string>
+		<string>libaom.so.3</string>
+		<string>libc.so.6</string>
+		<string>libdav1d.so.7</string>
+		<string>libgcc_s.so.1</string>
+		<string>libgdk_pixbuf-2.0.so.0</string>
+		<string>libglib-2.0.so.0</string>
+		<string>libgobject-2.0.so.0</string>
+		<string>libjpeg.so.8</string>
+		<string>libm.so.6</string>
+		<string>libpng16.so.16</string>
+		<string>librav1e.so.0.6</string>
+		<string>libstdc++.so.6</string>
+		<string>libxml2.so.2</string>
+	</array>
+	<key>short_desc</key>
+	<string>Library for encoding and decoding .avif files</string>
+	<key>source-revisions</key>
+	<string>libavif:6b24c2855b42</string>
+	<key>sourcepkg</key>
+	<string>libavif</string>
+	<key>version</key>
+	<string>1.4.2_1</string>
+</dict>
+</plist>

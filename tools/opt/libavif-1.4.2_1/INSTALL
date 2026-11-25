@@ -1,0 +1,41 @@
+#!/bin/sh
+#
+# Generic INSTALL/REMOVE script. Arguments passed to this script:
+#
+# $1 = ACTION	[pre/post]
+# $2 = PKGNAME
+# $3 = VERSION
+# $4 = UPDATE	[yes/no]
+# $5 = CONF_FILE (path to xbps.conf)
+# $6 = ARCH (uname -m)
+#
+# Note that paths must be relative to CWD, to avoid calling
+# host commands if /bin/sh (dash) is not installed and it's
+# not possible to chroot(2).
+#
+
+export PATH="/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin"
+
+TRIGGERSDIR="./usr/libexec/xbps-triggers"
+ACTION="$1"
+PKGNAME="$2"
+VERSION="$3"
+UPDATE="$4"
+CONF_FILE="$5"
+ARCH="$6"
+
+#
+# The following code will run the triggers.
+#
+
+case "${ACTION}" in
+pre)
+	;;
+post)
+	${TRIGGERSDIR}/gdk-pixbuf-loaders run post-install ${PKGNAME} ${VERSION} ${UPDATE} ${CONF_FILE}
+	[ $? -ne 0 ] && exit $?
+	;;
+esac
+
+
+exit 0

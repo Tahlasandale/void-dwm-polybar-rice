@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>dirs</key>
+	<array>
+		<dict>
+			<key>file</key>
+			<string>/usr</string>
+		</dict>
+		<dict>
+			<key>file</key>
+			<string>/usr/lib</string>
+		</dict>
+	</array>
+	<key>files</key>
+	<array>
+		<dict>
+			<key>file</key>
+			<string>/usr/lib/libchafa.so.0.11.3</string>
+			<key>sha256</key>
+			<string>28a53ff159f44de94b1620072dab3f7c95d45f75420d01ad6e904a18ffac1af0</string>
+			<key>size</key>
+			<integer>441088</integer>
+		</dict>
+	</array>
+	<key>links</key>
+	<array>
+		<dict>
+			<key>file</key>
+			<string>/usr/lib/libchafa.so.0</string>
+			<key>target</key>
+			<string>/usr/lib/libchafa.so.0.11.3</string>
+		</dict>
+	</array>
+</dict>
+</plist>

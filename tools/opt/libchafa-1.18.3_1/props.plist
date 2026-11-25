@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>architecture</key>
+	<string>x86_64</string>
+	<key>changelog</key>
+	<string>https://raw.githubusercontent.com/hpjansson/chafa/master/NEWS</string>
+	<key>homepage</key>
+	<string>https://hpjansson.org/chafa/</string>
+	<key>installed_size</key>
+	<integer>441088</integer>
+	<key>license</key>
+	<string>LGPL-3.0-or-later</string>
+	<key>maintainer</key>
+	<string>Orphaned &lt;orphan@voidlinux.org&gt;</string>
+	<key>pkgname</key>
+	<string>libchafa</string>
+	<key>pkgver</key>
+	<string>libchafa-1.18.3_1</string>
+	<key>run_depends</key>
+	<array>
+		<string>glibc&gt;=2.41_1</string>
+		<string>glib&gt;=2.86.0_1</string>
+	</array>
+	<key>shlib-provides</key>
+	<array>
+		<string>libchafa.so.0</string>
+	</array>
+	<key>shlib-requires</key>
+	<array>
+		<string>libc.so.6</string>
+		<string>libglib-2.0.so.0</string>
+		<string>libm.so.6</string>
+	</array>
+	<key>short_desc</key>
+	<string>Versatile and fast Unicode/ASCII/ANSI graphics renderer - shared library</string>
+	<key>source-revisions</key>
+	<string>chafa:bde325e7701</string>
+	<key>sourcepkg</key>
+	<string>chafa</string>
+	<key>version</key>
+	<string>1.18.3_1</string>
+</dict>
+</plist>

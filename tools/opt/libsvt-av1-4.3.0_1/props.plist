@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>architecture</key>
+	<string>x86_64</string>
+	<key>changelog</key>
+	<string>https://gitlab.com/AOMediaCodec/SVT-AV1/-/raw/master/CHANGELOG.md</string>
+	<key>homepage</key>
+	<string>https://gitlab.com/AOMediaCodec/SVT-AV1</string>
+	<key>installed_size</key>
+	<integer>5354733</integer>
+	<key>license</key>
+	<string>BSD-3-Clause-Clear</string>
+	<key>maintainer</key>
+	<string>Orphaned &lt;orphan@voidlinux.org&gt;</string>
+	<key>pkgname</key>
+	<string>libsvt-av1</string>
+	<key>pkgver</key>
+	<string>libsvt-av1-4.3.0_1</string>
+	<key>run_depends</key>
+	<array>
+		<string>glibc&gt;=2.41_1</string>
+	</array>
+	<key>shlib-provides</key>
+	<array>
+		<string>libSvtAv1Enc.so.4</string>
+	</array>
+	<key>shlib-requires</key>
+	<array>
+		<string>libc.so.6</string>
+		<string>libm.so.6</string>
+	</array>
+	<key>short_desc</key>
+	<string>AV1-compliant encoder/decoder library core - library files</string>
+	<key>source-revisions</key>
+	<string>svt-av1:2167c720b4c</string>
+	<key>sourcepkg</key>
+	<string>svt-av1</string>
+	<key>version</key>
+	<string>4.3.0_1</string>
+</dict>
+</plist>

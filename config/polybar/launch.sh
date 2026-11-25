@@ -1,4 +1,5 @@
 #!/bin/sh
+export PATH="$HOME/.local/bin:$HOME/.local/bin/bar:$PATH"
 # Terminate already running polybar instances
 pkill -x polybar 2>/dev/null || true
 while pgrep -u $(id -u) -x polybar >/dev/null 2>&1; do sleep 0.05; done

@@ -1,0 +1,6 @@
+#!/bin/sh
+exec tail -n +3 $0
+# Fallback / Chainload entry for macOS Monterey
+menuentry "macOS Monterey" --class osx --class darwin --class os {
+    exit
+}

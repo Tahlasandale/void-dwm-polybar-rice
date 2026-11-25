@@ -21,7 +21,7 @@ Les fichiers sont copiés **tels quels** : aucun correctif, aucun tri de mes cha
 - `.Xauthority`, historiques, caches, configs Mozilla/Obsidian/OpenCode/glib/pulse.
 - Legacy supprimé : `dwmblocks`, `block-keylocks`, `block-megasync`, `block-theme`, `xbindkeys`, patchs `.orig/.rej/.diff` et variantes Yazi inactives.
 - Fichiers générés (`colors.toml`, `dunstrc`, `colors.ini`) stockés sous forme de liens relatifs, pas de doublons.
-- Binaires compilés dans `src/` : `bin/dwm` et `bin/dmenu` sont conservés, les `.o` sont ignorés.
+- Binaires compilés dans `src/` : non versionnés, `make` les reconstruit (les `.o` sont ignorés).
 - `git` est un paquet système ; le repo ne le duplique pas.
 
 ## Restauration
@@ -42,10 +42,12 @@ pkill -x dwm   # puis relancer la session
 
 ## Points notables de l'état figé
 
-- Clavier : `setxkbmap -layout fr -variant mac`.
+- Clavier : `setxkbmap -layout fr -variant mac` (inchangé).
+- Curseur : `Xcursor.size: 48`, `xrdb -merge ~/.Xresources` au login, GTK `prefer-dark`.
 - Rotation fonds : `Ctrl+!` → `next-wallpaper.sh`, dossier `~/Images/wallpapers`.
-- Polybar : `override-redirect = false`, couleur primaire `#94e2d5`.
-- dmenu : thème dark/eink dans `dmenu-drun`, palette Catppuccin + coins arrondis compilés.
-- Presse-papiers : `sxhkd` `Win+Maj+V` → `clipboard-history.sh` (`clipmenu`), `clipmenud` au login.
+- Polybar : style `cuts` (adi1090x) adapté, `override-redirect = false`, primaire `#94e2d5` ; ancienne config dans `backups/polybar-*.tar.gz`.
+- dmenu : prompt aligné sur les entrées, palette Catppuccin + coins arrondis compilés.
+- Bordures dwm : active `#94e2d5`, inactive `#11111b`, épaisseur 5 px.
+- Presse-papiers : `sxhkd` `Win+Maj+V` → `clipboard-history.sh` (`clipmenu`), `clipmenud` au login ; captures = image en CLIPBOARD + chemin en PRIMARY.
 - Yazi : wrapper qui force le driver Chafa sous X11/Alacritty.
-- `xdg-open` : wrapper local `firefox` / `gio` / `feh`.
+- `xdg-open` : wrapper local temporaire ; installer `xdg-utils` (`sudo xbps-install -S xdg-utils`) puis retirer le wrapper.

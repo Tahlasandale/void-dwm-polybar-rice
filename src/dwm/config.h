@@ -10,6 +10,7 @@ static const int usealtbar          = 1;        /* 1 means use non-dwm status ba
 static const char *altbarclass      = "Polybar"; /* Alternate bar class name */
 static const char *alttrayname      = "tray";    /* Polybar tray instance name */
 static const char *altbarcmd        = "$HOME/.config/polybar/launch.sh"; /* Alternate bar launch command */
+static const int bottombarheight    = 28;       /* hauteur de la barre Polybar basse */
 static const char *fonts[]          = { "JetBrainsMono Nerd Font:size=10", "monospace:size=10" };
 static const char dmenufont[]       = "JetBrainsMono Nerd Font:size=10";
 
@@ -68,6 +69,7 @@ static const char *dmenucmd[]      = { "dmenu-drun", NULL };
 static const char *termcmd[]       = { "alacritty", NULL };
 static const char *stcmd[]         = { "alacritty", NULL };
 static const char *lockcmd[]       = { "slock", NULL };
+static const char *bartogglecmd[]  = { "toggle-bars.sh", NULL };
 static const char *themecmd[]      = { "nicotine-theme", "toggle", NULL };
 static const char *wallcmd[]       = { "next-wallpaper.sh", NULL };
 static const char *opencmd[]       = { "alacritty", "-e", "/home/bison/.local/bin/cdd-opencode.sh", NULL };
@@ -213,9 +215,11 @@ static const Key keys[] = {
 	{ MOD_ALT|ShiftMask,            XK_e,            quit,           {0} },
 	{ MOD_ALT|ShiftMask,            XK_q,            quit,           {0} },
 
-	/* 12. Masquer / afficher la barre de statut (Super + b / Alt + Shift + b) */
-	{ MOD_SUPER,                    XK_b,            togglebar,      {0} },
-	{ MOD_ALT|ShiftMask,            XK_b,            togglebar,      {0} },
+	/* 12. Masquer / afficher les deux barres (Super + b / Alt + Shift + b) */
+	{ MOD_SUPER,                    XK_b,            spawn,          {.v = bartogglecmd } },
+	{ MOD_ALT|ShiftMask,            XK_b,            spawn,          {.v = bartogglecmd } },
+	/* Raccourci interne utilisé par toggle-bars.sh */
+	{ MOD_SUPER|MOD_ALT,            XK_b,            togglebar,      {0} },
 };
 
 /* button definitions */

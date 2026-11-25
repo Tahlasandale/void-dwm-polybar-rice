@@ -1,0 +1,26 @@
+#!/bin/sh
+# Nombre de mises à jour xbps, avec cache de 30 minutes.
+if [ -n "$XDG_RUNTIME_DIR" ]; then
+    CACHE="$XDG_RUNTIME_DIR/polybar-updates"
+else
+    CACHE="/tmp/run-user-1000/polybar-updates"
+fi
+mkdir -p "$(dirname "$CACHE")" 2>/dev/null || true
+
+NOW=$(date +%s)
+OLD=$(stat -c %Y "$CACHE" 2>/dev/null || printf '0')
+AGE=$((NOW - OLD))
+
+if [ "$1" = "--refresh" ] || [ ! -f "$CACHE" ] || [ "$AGE" -gt 1800 ]; then
+    if [ "$1" = "--refresh" ] || [ ! -f "$CACHE" ]; then
+        (
+            N=$(xbps-install -un 2>/dev/null | grep -c '^[^[:space:]]')
+            printf '%s\n' "${N:-0}" > "$CACHE"
+        ) &
+        printf "…\n"
+        exit 0
+    fi
+fi
+
+N=$(cat "$CACHE" 2>/dev/null || printf '0')
+printf "↑ %s\n" "$N"

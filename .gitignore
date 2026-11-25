@@ -1,4 +1,6 @@
 *.o
+src/dwm/dwm
+src/dmenu/dmenu
 *.pyc
 __pycache__/
 *.log

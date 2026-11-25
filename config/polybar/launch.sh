@@ -9,5 +9,7 @@ if [ ! -L "$HOME/.config/polybar/colors.ini" ]; then
     (cd "$HOME/.config/polybar" && ln -sfn themes/dark.ini colors.ini)
 fi
 
-# Launch main bar
-polybar main >/tmp/polybar.log 2>&1 &
+# Launch the two cuts bars
+: > /tmp/polybar.log
+polybar top >>/tmp/polybar.log 2>&1 &
+polybar bottom >>/tmp/polybar.log 2>&1 &

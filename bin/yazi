@@ -1,5 +1,3 @@
 #!/bin/sh
-# Force le preview Chafa: sans XDG_SESSION_TYPE/DISPLAY, Yazi choisit le driver Chafa
-export YAZI_DISPLAY="${DISPLAY:-:0}"
-unset XDG_SESSION_TYPE DISPLAY
-exec /usr/bin/yazi "$@"
+# Force le preview Chafa : sans indices X11, Yazi choisit le driver Chafa.
+exec env -u XDG_SESSION_TYPE -u DISPLAY -u WAYLAND_DISPLAY /usr/bin/yazi "$@"

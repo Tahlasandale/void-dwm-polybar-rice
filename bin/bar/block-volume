@@ -1,72 +1,123 @@
 #!/bin/sh
-if [ -z "$XDG_RUNTIME_DIR" ]; then export XDG_RUNTIME_DIR="/tmp/run-user-1000"; fi
-# ~/.local/bin/bar/block-volume — Volume sonore (PipeWire / ALSA)
+if [ -z "$XDG_RUNTIME_DIR" ]; then export XDG_RUNTIME_DIR="/tmp/run-user-$(id -u)"; fi
+
+# ~/.local/bin/bar/block-volume — Volume sonore (PipeWire / ALSA) avec limite 100%
 case "${BLOCK_BUTTON:-${BUTTON:-0}}" in
     1) # Clic gauche = toggle mute
         if command -v pamixer >/dev/null 2>&1 && pamixer -t 2>/dev/null; then
             :
+        elif command -v wpctl >/dev/null 2>&1; then
+            wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle >/dev/null 2>&1 || true
         else
-            amixer sset Master toggle >/dev/null 2>&1
+            amixer sset Master toggle >/dev/null 2>&1 || true
         fi
+        polybar-msg action "#volume.exec" >/dev/null 2>&1 || true
         ;;
-    4) # Molette haut = +5%
-        if command -v pamixer >/dev/null 2>&1 && pamixer -i 5 2>/dev/null; then
-            :
+    4) # Molette haut = +5% (strictement plafonné à 100%)
+        if command -v pamixer >/dev/null 2>&1; then
+            pamixer --set-limit 100 -i 5 >/dev/null 2>&1 || true
+        elif command -v wpctl >/dev/null 2>&1; then
+            wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+ >/dev/null 2>&1 || true
         else
-            amixer sset Master 5%+ >/dev/null 2>&1
+            amixer sset Master 5%+ >/dev/null 2>&1 || true
         fi
+        polybar-msg action "#volume.exec" >/dev/null 2>&1 || true
         ;;
     5) # Molette bas = -5%
-        if command -v pamixer >/dev/null 2>&1 && pamixer -d 5 2>/dev/null; then
-            :
+        if command -v pamixer >/dev/null 2>&1; then
+            pamixer -d 5 >/dev/null 2>&1 || true
+        elif command -v wpctl >/dev/null 2>&1; then
+            wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%- >/dev/null 2>&1 || true
         else
-            amixer sset Master 5%- >/dev/null 2>&1
+            amixer sset Master 5%- >/dev/null 2>&1 || true
         fi
+        polybar-msg action "#volume.exec" >/dev/null 2>&1 || true
         ;;
     3) # Clic droit = mixeur graphique / ncurses
         alacritty -T "Mixeur Audio" -e alsamixer &
         ;;
 esac
 
-# 1. Tentative pamixer
+# 1. Lecture via pamixer (PipeWire / PulseAudio)
 if command -v pamixer >/dev/null 2>&1; then
     MUTE=$(pamixer --get-mute 2>/dev/null || echo "error")
     if [ "$MUTE" != "error" ]; then
         if [ "$MUTE" = "true" ]; then
-            printf "\n"
+            printf "%%{F#6c7086}󰝟 Muet%%{F-}\n"
             exit 0
         fi
         VOL=$(pamixer --get-volume 2>/dev/null || echo "0")
-        if [ "$VOL" -ge 70 ]; then
-            ICON=""
+        # Ecretage strict de securite a 100%
+        if [ "$VOL" -gt 100 ]; then
+            VOL=100
+            pamixer --set-volume 100 >/dev/null 2>&1 || true
+        fi
+        if [ "$VOL" -ge 65 ]; then
+            ICON="󰕾"
         elif [ "$VOL" -ge 30 ]; then
-            ICON=""
+            ICON="󰖀"
+        elif [ "$VOL" -gt 0 ]; then
+            ICON="󰕿"
         else
-            ICON=""
+            printf "%%{F#6c7086}󰝟 0%%%%%%{F-}\n"
+            exit 0
         fi
         printf "%s %s%%\n" "$ICON" "$VOL"
         exit 0
     fi
 fi
 
-# 2. Fallback ALSA pur
-OUT=$(amixer sget Master 2>/dev/null || true)
-if [ -n "$OUT" ]; then
-    STATE=$(echo "$OUT" | grep -m1 -o '\[on\]\|\[off\]' | tr -d '[]' || echo "on")
-    if [ "$STATE" = "off" ]; then
-        printf "\n"
+# 2. Lecture via wpctl
+if command -v wpctl >/dev/null 2>&1; then
+    STATUS=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null || true)
+    if [ -n "$STATUS" ]; then
+        if echo "$STATUS" | grep -q "\[MUTED\]"; then
+            printf "%%{F#6c7086}󰝟 Muet%%{F-}\n"
+            exit 0
+        fi
+        VOL_FLOAT=$(echo "$STATUS" | awk "{print \$2}")
+        VOL=$(awk -v v="$VOL_FLOAT" "BEGIN {printf \"%d\", v * 100}")
+        if [ "$VOL" -gt 100 ]; then
+            VOL=100
+            wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 1.0 >/dev/null 2>&1 || true
+        fi
+        if [ "$VOL" -ge 65 ]; then
+            ICON="󰕾"
+        elif [ "$VOL" -ge 30 ]; then
+            ICON="󰖀"
+        elif [ "$VOL" -gt 0 ]; then
+            ICON="󰕿"
+        else
+            printf "%%{F#6c7086}󰝟 0%%%%%%{F-}\n"
+            exit 0
+        fi
+        printf "%s %s%%\n" "$ICON" "$VOL"
         exit 0
     fi
-    VOL=$(echo "$OUT" | grep -m1 -o '[0-9]*%' | tr -d '%' || echo "0")
-    if [ "$VOL" -ge 70 ]; then
-        ICON=""
+fi
+
+# 3. Fallback ALSA pur
+OUT=$(amixer sget Master 2>/dev/null || true)
+if [ -n "$OUT" ]; then
+    STATE=$(echo "$OUT" | grep -m1 -o "\[on\]\|\[off\]" | tr -d "[]" || echo "on")
+    if [ "$STATE" = "off" ]; then
+        printf "%%{F#6c7086}󰝟 Muet%%{F-}\n"
+        exit 0
+    fi
+    VOL=$(echo "$OUT" | grep -m1 -o "[0-9]*%" | tr -d "%" || echo "0")
+    if [ "$VOL" -gt 100 ]; then VOL=100; fi
+    if [ "$VOL" -ge 65 ]; then
+        ICON="󰕾"
     elif [ "$VOL" -ge 30 ]; then
-        ICON=""
+        ICON="󰖀"
+    elif [ "$VOL" -gt 0 ]; then
+        ICON="󰕿"
     else
-        ICON=""
+        printf "%%{F#6c7086}󰝟 0%%%%%%{F-}\n"
+        exit 0
     fi
     printf "%s %s%%\n" "$ICON" "$VOL"
     exit 0
 fi
 
-printf "\n"
+printf "󰕾 50%%\n"

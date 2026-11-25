@@ -1,0 +1,45 @@
+# Global CrossCode Grub Theme (Patched for MacBook Air 1440x900)
+title-text: ""
+desktop-image: "background.png"
+desktop-color: "#0b1526"
+
+# Terminal for Console and Options (with semi-transparent tinted glass)
+terminal-border: "20"
+terminal-left: "15%"
+terminal-top: "15%"
+terminal-width: "70%"
+terminal-height: "70%"
+terminal-box: "term_*.png"
+terminal-font: "Monocraft Regular 22"
+
+# Single, clean, synchronized boot menu
++ boot_menu {
+    left = 4%
+    top = 46%
+    width = 620
+    height = 360
+
+    item_font = "PixelHallfeticaJP10P Regular 30"
+    item_color = "#3a4466"
+    selected_item_color = "#ffffff"
+    item_height = 42
+    item_padding = 8
+    item_spacing = 16
+    item_pixmap_style = "item_*.png"
+    selected_item_pixmap_style = "selected_item_*.png"
+    scrollbar = false
+}
+
+# Timeout notification
++ label {
+    id = "__timeout__"
+    left = 4%
+    top = 92%
+    height = 30
+    width = 620
+
+    text = "Démarrage automatique dans %d secondes"
+    align = "left"
+    font = "PixelHallfeticaJP10P Regular 30"
+    color = "white"
+}

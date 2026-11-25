@@ -1,19 +1,13 @@
-# Clean and stable dual-boot configuration for MacBook Air 2015
+# CrossCode Grub Theme configuration for MacBook Air 2015
 GRUB_DEFAULT=0
 GRUB_TIMEOUT=5
 GRUB_DISTRIBUTOR="VoidLinux"
 
-# Console mode to clear Apple VRAM framebuffer artifacts
-GRUB_TERMINAL_INPUT="console"
-GRUB_TERMINAL_OUTPUT="console"
-GRUB_TERMINAL="console"
-
-# Native display resolution & Linux console settings
-GRUB_GFXMODE="1440x900"
+GRUB_THEME="/boot/grub/themes/crossgrub/theme.txt"
+GRUB_GFXMODE="1440x900x32,1440x900,auto"
 GRUB_GFXPAYLOAD_LINUX="keep"
+GRUB_TERMINAL_OUTPUT="gfxterm"
 
-# Kernel boot options
 GRUB_CMDLINE_LINUX_DEFAULT="loglevel=4 fbcon=nodefer i915.fastboot=1"
 GRUB_CMDLINE_LINUX=""
-
 GRUB_DISABLE_OS_PROBER=false

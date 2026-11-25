@@ -39,6 +39,20 @@ for f in "$ROOT"/config/*; do
     link "$f" "$HOME/.config/$(basename "$f")"
 done
 
+# Fichiers de thème générés : liens relatifs, état courant respecté
+STATE=$(cat "$HOME/.cache/nicotine-theme" 2>/dev/null || echo dark)
+mkdir -p "$HOME/.config/alacritty" "$HOME/.config/dunst" "$HOME/.config/polybar"
+if [ "$STATE" = "eink" ]; then
+    (cd "$HOME/.config/alacritty" && ln -sfn themes/eink.toml colors.toml)
+    (cd "$HOME/.config/dunst" && ln -sfn dunstrc-eink dunstrc)
+    (cd "$HOME/.config/polybar" && ln -sfn themes/eink.ini colors.ini)
+else
+    (cd "$HOME/.config/alacritty" && ln -sfn themes/catppuccin-mocha.toml colors.toml)
+    (cd "$HOME/.config/dunst" && ln -sfn dunstrc-dark dunstrc)
+    (cd "$HOME/.config/polybar" && ln -sfn themes/dark.ini colors.ini)
+fi
+(cd "$HOME/.config/alacritty" && ln -sfn fonts/maple-mono.toml font.toml)
+
 mkdir -p "$HOME/.local/bin/bar"
 for f in "$ROOT"/bin/*; do
     [ -f "$f" ] || continue

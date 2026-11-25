@@ -29,36 +29,36 @@ fi
 mkdir -p "$HOME/.cache"
 echo "$TARGET" > "$STATE_FILE"
 
-# 1. Alacritty : rechargement de palette a chaud via symlink
+# 1. Alacritty : liens relatifs vers la palette active
 mkdir -p "$HOME/.config/alacritty/themes"
 if [ "$TARGET" = "eink" ]; then
-    ln -sf "$HOME/.config/alacritty/themes/eink.toml" "$HOME/.config/alacritty/colors.toml"
+    (cd "$HOME/.config/alacritty" && ln -sfn themes/eink.toml colors.toml)
 else
-    ln -sf "$HOME/.config/alacritty/themes/catppuccin-mocha.toml" "$HOME/.config/alacritty/colors.toml"
+    (cd "$HOME/.config/alacritty" && ln -sfn themes/catppuccin-mocha.toml colors.toml)
 fi
 touch "$HOME/.config/alacritty/alacritty.toml" 2>/dev/null || true
 
-# 2. Dunst : rechargement de configuration a chaud via symlink et dunstctl
+# 2. Dunst : lien relatif + rechargement a chaud
 mkdir -p "$HOME/.config/dunst"
 if [ "$TARGET" = "eink" ]; then
-    ln -sf "$HOME/.config/dunst/dunstrc-eink" "$HOME/.config/dunst/dunstrc"
+    (cd "$HOME/.config/dunst" && ln -sfn dunstrc-eink dunstrc)
 else
-    ln -sf "$HOME/.config/dunst/dunstrc-dark" "$HOME/.config/dunst/dunstrc"
+    (cd "$HOME/.config/dunst" && ln -sfn dunstrc-dark dunstrc)
 fi
 if command -v dunstctl >/dev/null 2>&1; then
     dunstctl reload 2>/dev/null || true
 fi
 
-# 3. Polybar : bascule de la palette de couleurs
+# 3. Polybar : palette via lien relatif, puis relance
 mkdir -p "$HOME/.config/polybar/themes"
 if [ -f "$HOME/.config/polybar/themes/${TARGET}.ini" ]; then
-    ln -sf "$HOME/.config/polybar/themes/${TARGET}.ini" "$HOME/.config/polybar/colors.ini"
+    (cd "$HOME/.config/polybar" && ln -sfn "themes/${TARGET}.ini" colors.ini)
     if [ -x "$HOME/.config/polybar/launch.sh" ]; then
         "$HOME/.config/polybar/launch.sh" &
     fi
 fi
 
-# 4. Fond d'ecran : application d'un wallpaper du dossier correspondant (dark/ ou eink/)
+# 4. Fond d'ecran
 if [ -x "$HOME/.local/bin/next-wallpaper.sh" ]; then
     "$HOME/.local/bin/next-wallpaper.sh" 2>/dev/null || true
 elif [ "$TARGET" = "eink" ]; then
@@ -67,10 +67,7 @@ else
     xsetroot -solid "#1e1e2e" 2>/dev/null || true
 fi
 
-# 5. dwmblocks (compatibilite si actif)
-pkill -RTMIN+7 dwmblocks 2>/dev/null || true
-
-# 6. Notification visuelle
+# 5. Notification visuelle
 if command -v notify-send >/dev/null 2>&1; then
     notify-send -u normal -t 2500 "Thème actif" "Mode : $(echo "$TARGET" | tr '[:lower:]' '[:upper:]')" 2>/dev/null || true
 fi

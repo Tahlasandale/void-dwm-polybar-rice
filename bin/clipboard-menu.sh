@@ -1,1 +1,0 @@
-/home/bison/.local/bin/clipboard-history.sh

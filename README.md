@@ -5,20 +5,22 @@ Les fichiers sont copiés **tels quels** : aucun correctif, aucun tri de mes cha
 
 ## Contenu
 
-- `home/` : `.xinitrc`, `.Xresources`, `.bashrc`, `.bash_aliases`, `.bash_logout`, `.profile`, `.inputrc`, `.xbindkeysrc`
-- `config/` : alacritty, dunst, fastfetch, gtk-3.0/4.0, libinput-gestures.conf, micro, oh-my-posh, polybar, sxhkd, yazi (+ flavors)
-- `bin/` : tous les scripts utiles de `~/.local/bin`, dont `bar/`, `dmenu-drun`, `next-wallpaper.sh`, `clipboard-history.sh`, `clipboard-menu.sh`, `xdg-open`, `yazi`, `chafa`, `xclip`
-- `src/` : sources `dwm`, `dmenu`, `dwmblocks` (sans `.git` imbriqués ni `.o`)
+- `home/` : `.xinitrc`, `.Xresources`, `.bashrc`, `.bash_aliases`, `.bash_logout`, `.profile`, `.inputrc`
+- `config/` : alacritty, dunst, fastfetch, gtk-3.0/4.0, libinput-gestures.conf, micro, oh-my-posh, polybar, sxhkd, yazi (une seule flavor Catppuccin Mocha teal)
+- `bin/` : scripts actifs de `~/.local/bin`, dont `bar/`, `dmenu-drun`, `next-wallpaper.sh`, `clipboard-history.sh`, `xdg-open`, `yazi`, `chafa`, `xclip`
+- `src/` : sources `dwm` et `dmenu` (sans `.git` imbriqués ni `.o`)
 - `wallpapers/` : les 5 images de `~/Images/wallpapers`
-- `fonts/` : JetBrainsMono Nerd Font + Font Awesome 6 (celles référencées par la barre/le terminal)
-- `tools/opt/` : payloads locaux `xclip`, `chafa` + libs, `xbindkeys`
+- `fonts/` : JetBrainsMono Nerd Font, Font Awesome 6 et Maple Mono NF (Regular/Bold/Italic)
+- `tools/opt/` : payloads locaux `xclip`, `chafa` + libs
 - `system/pkglist.txt` : paquets installés explicitement (`xbps-query -m`)
 
 ## Exclusions volontaires
 
 - `~/.local/bin/agy` (263 Mo) et `~/.local/bin/oh-my-posh` (14 Mo) : binaires applicatifs, à installer via xbps.
-- Polices non référencées (`MapleMono`, `Libron`).
+- Polices non utilisées (Maple Mono Light/Medium/SemiBold/etc., Libron).
 - `.Xauthority`, historiques, caches, configs Mozilla/Obsidian/OpenCode/glib/pulse.
+- Legacy supprimé : `dwmblocks`, `block-keylocks`, `block-megasync`, `block-theme`, `xbindkeys`, patchs `.orig/.rej/.diff` et variantes Yazi inactives.
+- Fichiers générés (`colors.toml`, `dunstrc`, `colors.ini`) stockés sous forme de liens relatifs, pas de doublons.
 - Binaires compilés dans `src/` : `bin/dwm` et `bin/dmenu` sont conservés, les `.o` sont ignorés.
 - `git` est un paquet système ; le repo ne le duplique pas.
 
@@ -26,7 +28,7 @@ Les fichiers sont copiés **tels quels** : aucun correctif, aucun tri de mes cha
 
 ```sh
 ./bootstrap.sh          # vérifie git et recopie tools/opt vers ~/.local/opt si absent
-./deploy.sh             # crée des liens symboliques, refuse d'écraser l'existant
+./deploy.sh             # crée les liens, y compris les liens de thème relatifs, refuse d'écraser l'existant
 ./deploy.sh --force     # sauvegarde dans ~/.rice-backup/<horodatage> avant de remplacer
 ```
 

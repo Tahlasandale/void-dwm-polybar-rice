@@ -62,7 +62,7 @@ if status == 'Discharging':
     else:
         time_str = f'{capacity}%'
 elif status == 'Charging':
-    icon = f'{base_icon} 󰂄'
+    icon = '󰂄'
     if current_now > 0:
         h = max(0, charge_full - charge_now) / current_now
         hours = int(h)

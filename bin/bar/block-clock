@@ -2,13 +2,13 @@
 if [ -z "$XDG_RUNTIME_DIR" ]; then export XDG_RUNTIME_DIR="/tmp/run-user-1000"; fi
 # Horloge & Bouton Power
 case "${BLOCK_BUTTON:-0}" in
-    1) slock & ;; # Clic gauche = verrouiller
+    1) lock.sh & ;; # Clic gauche = verrouiller
     3) # Clic droit = menu extinction
         alacritty -T "Menu Alimentation" -e sh -c '
-            printf "1. Verrouiller (slock)\n2. Mettre en veille (zzz)\n3. Redemarrer\n4. Eteindre\nChoix: ";
+            printf "1. Verrouiller (lock.sh)\n2. Mettre en veille (zzz)\n3. Redemarrer\n4. Eteindre\nChoix: ";
             read c;
             case "$c" in
-                1) slock ;;
+                1) lock.sh ;;
                 2) sudo zzz ;;
                 3) sudo reboot ;;
                 4) sudo poweroff ;;

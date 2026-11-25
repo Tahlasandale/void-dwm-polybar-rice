@@ -21,7 +21,7 @@ case "${BLOCK_BUTTON:-0}" in
 esac
 
 if pgrep -x syncthing >/dev/null 2>&1; then
-    printf "\n"
+    printf "%%{F#94e2d5}%%{F-}\n"
 else
     printf ""
 fi

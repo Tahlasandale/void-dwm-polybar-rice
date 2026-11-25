@@ -1,26 +1,11 @@
 #!/usr/bin/env python3
 import os, sys, glob, subprocess
 
-# 1. Détection des couleurs du thème actif
-theme = "dark"
-theme_file = os.path.expanduser("~/.cache/nicotine-theme")
-if os.path.exists(theme_file):
-    try:
-        with open(theme_file, "r") as f:
-            theme = f.read().strip()
-    except Exception:
-        pass
-
-if theme == "eink":
-    nb = "#f5f4ed"
-    nf = "#1a1a1a"
-    sb = "#1a1a1a"
-    sf = "#f5f4ed"
-else: # dark (Catppuccin Mocha)
-    nb = "#1e1e2e"
-    nf = "#cdd6f4"
-    sb = "#94e2d5"
-    sf = "#1e1e2e"
+# 1. Palette fixe (Catppuccin Mocha)
+nb = "#1e1e2e"
+nf = "#cdd6f4"
+sb = "#94e2d5"
+sf = "#1e1e2e"
 
 # 2. Indexation des applications (.desktop)
 apps = {}

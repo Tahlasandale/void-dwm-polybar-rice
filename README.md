@@ -46,7 +46,7 @@ pkill -x dwm   # puis relancer la session
 - Curseur : `Xcursor.size: 48`, `xrdb -merge ~/.Xresources` au login, GTK `prefer-dark`.
 - Rotation fonds : `Ctrl+!` → `next-wallpaper.sh`, dossier `~/Images/wallpapers`.
 - Polybar : style `cuts` (adi1090x) à **deux barres** (`top` gérée par dwm, `bottom` indépendante), fond translucide `#cc1e1e2e`, modules `#11111b`, primaire `#94e2d5` ; dwm réserve 28 px en bas. Anciennes configs dans `backups/polybar-*.tar.gz`.
-- Barres : `Super+b` / `Alt+Maj+b` masque les deux via `toggle-bars.sh` ; `color-switch` (icône `◐`) bascule dark/eink.
+- Barres : `Super+b` / `Alt+Maj+b` masque les deux via `toggle-bars.sh`.
 - dmenu : prompt aligné sur les entrées, palette Catppuccin + coins arrondis compilés.
 - Bordures dwm : active `#94e2d5`, inactive `#11111b`, épaisseur 5 px.
 - Presse-papiers : `sxhkd` `Win+Maj+V` → `clipboard-history.sh` (`clipmenu`), `clipmenud` au login ; captures = image en CLIPBOARD + chemin en PRIMARY.

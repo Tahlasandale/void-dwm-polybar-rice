@@ -10,3 +10,14 @@ save_to_clipboard = true
 [window]
 opacity = 0.88
 padding = { x = 10, y = 10 }
+
+[keyboard]
+bindings = [
+  { key = "à", mods = "Control", action = "ResetFontSize" },
+]
+
+[mouse]
+bindings = [
+  { mouse = "WheelUp", mods = "Control", action = "IncreaseFontSize" },
+  { mouse = "WheelDown", mods = "Control", action = "DecreaseFontSize" },
+]

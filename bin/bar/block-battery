@@ -48,7 +48,7 @@ charge_now = int(read_val('charge_now', read_val('energy_now', '0')))
 charge_full = int(read_val('charge_full', read_val('energy_full', '0')))
 current_now = int(read_val('current_now', read_val('power_now', '0')))
 
-icons = ['', '', '', '', '']
+icons = ['󰁹', '󰁻', '󰁾', '󰂁', '󱊣']
 icon_idx = min(4, max(0, capacity // 20))
 base_icon = icons[icon_idx]
 
@@ -63,7 +63,7 @@ if status == 'Discharging':
     else:
         time_str = f'{capacity}%'
 elif status == 'Charging':
-    icon = f'{base_icon} '
+    icon = f'{base_icon} 󰂄'
     if current_now > 0:
         h = max(0, charge_full - charge_now) / current_now
         hours = int(h)
@@ -72,14 +72,26 @@ elif status == 'Charging':
     else:
         time_str = f'{capacity}%'
 elif status in ('Full', 'Plugged') or capacity >= 99:
-    icon = f'{base_icon} '
+    icon = f'{base_icon}'
     time_str = 'Plein'
 else:
-    icon = f'{base_icon} '
+    icon = f'{base_icon}'
     time_str = 'Secteur'
 
-if mode == 'time' and time_str:
-    print(f'{icon} {time_str}')
+if status == 'Discharging' and capacity <= 20:
+    color = '#f38ba8'
+elif status == 'Charging' or status in ('Full', 'Plugged'):
+    color = '#94e2d5'
+elif capacity <= 50:
+    color = '#f9e2af'
 else:
-    print(f'{icon} {capacity}%')
+    color = '#a6e3a1'
+
+def tag(text):
+    return '%{F' + color + '}%{T6}' + text + '%{T-}%{F-}'
+
+if mode == 'time' and time_str:
+    print(f'{tag(icon)} {time_str}')
+else:
+    print(f'{tag(icon)} {capacity}%')
 " 2>/dev/null || printf ""

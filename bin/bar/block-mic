@@ -1,57 +1,89 @@
 #!/bin/sh
-if [ -z "$XDG_RUNTIME_DIR" ]; then export XDG_RUNTIME_DIR="/tmp/run-user-1000"; fi
-# ~/.local/bin/bar/block-mic — Microphone (Capture ALSA / PipeWire)
+# ~/.local/bin/bar/block-mic — Microphone (PipeWire prioritaire, fallback ALSA)
+if [ -z "$XDG_RUNTIME_DIR" ]; then export XDG_RUNTIME_DIR="/tmp/run-user-$(id -u)"; fi
+
+# Carte ALSA exposant le contrôle Capture
+CARD=""
+for i in 0 1 2 3 4 5 6 7; do
+    amixer -c "$i" sget Capture >/dev/null 2>&1 && { CARD=$i; break; }
+done
+
+pw_muted() {
+    if command -v pamixer >/dev/null 2>&1; then
+        [ "$(pamixer --default-source --get-mute 2>/dev/null)" = "true" ]
+    elif command -v wpctl >/dev/null 2>&1; then
+        wpctl get-volume @DEFAULT_SOURCE@ 2>/dev/null | grep -q '\[MUTED\]'
+    else
+        return 1
+    fi
+}
+
+alsa_muted() {
+    [ -n "$CARD" ] && amixer -c "$CARD" sget Capture 2>/dev/null | grep -q '\[off\]'
+}
+
+refresh() {
+    polybar-msg action "#mic.exec" >/dev/null 2>&1 || true
+}
 
 case "${BLOCK_BUTTON:-${BUTTON:-0}}" in
-    1) # Clic gauche = toggle mute
-        if command -v pamixer >/dev/null 2>&1 && pamixer --default-source -t >/dev/null 2>&1; then
-            :
+    1) # Clic gauche = mute / unmute (PipeWire + ALSA synchronises)
+        if pw_muted || alsa_muted; then
+            [ -n "$CARD" ] && amixer -c "$CARD" sset Capture cap >/dev/null 2>&1
+            if command -v pamixer >/dev/null 2>&1; then
+                pamixer --default-source -u >/dev/null 2>&1 || true
+            elif command -v wpctl >/dev/null 2>&1; then
+                wpctl set-mute @DEFAULT_SOURCE@ 0 >/dev/null 2>&1 || true
+            fi
         else
-            amixer sset Capture toggle >/dev/null 2>&1
+            [ -n "$CARD" ] && amixer -c "$CARD" sset Capture nocap >/dev/null 2>&1
+            if command -v pamixer >/dev/null 2>&1; then
+                pamixer --default-source -m >/dev/null 2>&1 || true
+            elif command -v wpctl >/dev/null 2>&1; then
+                wpctl set-mute @DEFAULT_SOURCE@ 1 >/dev/null 2>&1 || true
+            fi
         fi
+        refresh
         ;;
     4) # Molette haut = +5%
-        if command -v pamixer >/dev/null 2>&1 && pamixer --default-source -i 5 >/dev/null 2>&1; then
-            :
-        else
-            amixer sset Capture 5%+ >/dev/null 2>&1
+        if command -v pamixer >/dev/null 2>&1; then
+            pamixer --default-source -i 5 >/dev/null 2>&1 || true
+        elif command -v wpctl >/dev/null 2>&1; then
+            wpctl set-volume @DEFAULT_SOURCE@ 5%+ >/dev/null 2>&1 || true
+        elif [ -n "$CARD" ]; then
+            amixer -c "$CARD" sset Capture 5%+ >/dev/null 2>&1 || true
         fi
+        refresh
         ;;
     5) # Molette bas = -5%
-        if command -v pamixer >/dev/null 2>&1 && pamixer --default-source -d 5 >/dev/null 2>&1; then
-            :
-        else
-            amixer sset Capture 5%- >/dev/null 2>&1
+        if command -v pamixer >/dev/null 2>&1; then
+            pamixer --default-source -d 5 >/dev/null 2>&1 || true
+        elif command -v wpctl >/dev/null 2>&1; then
+            wpctl set-volume @DEFAULT_SOURCE@ 5%- >/dev/null 2>&1 || true
+        elif [ -n "$CARD" ]; then
+            amixer -c "$CARD" sset Capture 5%- >/dev/null 2>&1 || true
         fi
+        refresh
         ;;
-    3) # Clic droit = table de mixage
-        pavucontrol 2>/dev/null || alsamixer 2>/dev/null &
+    3) # Clic droit = mixeur
+        alacritty -T "Mixeur Micro" -e alsamixer &
         ;;
 esac
 
-# Detection du statut muet et volume
-IS_MUTED=0
+# Affichage
+if pw_muted || alsa_muted; then
+    printf "%%{F#f38ba8}%%{T6}󰍭%%{T-}%%{F-}\n"
+    exit 0
+fi
+
 VOL=""
-
-if command -v pamixer >/dev/null 2>&1 && pamixer --default-source --get-volume >/dev/null 2>&1; then
-    if [ "$(pamixer --default-source --get-mute 2>/dev/null)" = "true" ]; then
-        IS_MUTED=1
-    fi
-    P_VOL=$(pamixer --default-source --get-volume 2>/dev/null)
-    [ -n "$P_VOL" ] && VOL="${P_VOL}%"
+if command -v pamixer >/dev/null 2>&1; then
+    VOL=$(pamixer --default-source --get-volume 2>/dev/null)
+elif command -v wpctl >/dev/null 2>&1; then
+    V=$(wpctl get-volume @DEFAULT_SOURCE@ 2>/dev/null | awk '{print $2}')
+    [ -n "$V" ] && VOL=$(awk -v v="$V" 'BEGIN {printf "%d", v * 100}')
+elif [ -n "$CARD" ]; then
+    VOL=$(amixer -c "$CARD" sget Capture 2>/dev/null | grep -m1 -o '\[[0-9]*%\]' | tr -d '[]%')
 fi
-
-if [ -z "$VOL" ]; then
-    AMIX_OUT=$(amixer get Capture 2>/dev/null)
-    if echo "$AMIX_OUT" | grep -q "\[off\]"; then
-        IS_MUTED=1
-    fi
-    VOL=$(echo "$AMIX_OUT" | grep -m1 -o "\[[0-9]*%\]" | tr -d '[]')
-    [ -z "$VOL" ] && VOL="100%"
-fi
-
-if [ "$IS_MUTED" -eq 1 ]; then
-    printf "%%{F#f38ba8}%%{F-}\n"
-else
-    printf " %s\n" "$VOL"
-fi
+[ -z "$VOL" ] && VOL=100
+printf "%%{F#a6e3a1}%%{T6}󰍬%%{T-}%%{F-} %s%%\n" "$VOL"

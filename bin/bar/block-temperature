@@ -33,4 +33,12 @@ if [ -z "$TEMP" ]; then
     TEMP=32
 fi
 
-printf " %d°C\n" "$TEMP"
+if [ "$TEMP" -ge 75 ]; then
+    COLOR="#f38ba8"
+elif [ "$TEMP" -ge 60 ]; then
+    COLOR="#f9e2af"
+else
+    COLOR="#a6e3a1"
+fi
+
+printf "%%{F%s}%%{T6}󰔏%%{T-}%%{F-} %d°C\n" "$COLOR" "$TEMP"

@@ -17,10 +17,10 @@ if [ "$1" = "--refresh" ] || [ ! -f "$CACHE" ] || [ "$AGE" -gt 1800 ]; then
             N=$(xbps-install -un 2>/dev/null | grep -c '^[^[:space:]]')
             printf '%s\n' "${N:-0}" > "$CACHE"
         ) &
-        printf "…\n"
+        printf "%%{F#fab387}…%%{F-}\n"
         exit 0
     fi
 fi
 
 N=$(cat "$CACHE" 2>/dev/null || printf '0')
-printf "↑ %s\n" "$N"
+printf "%%{F#fab387}↑%%{F-} %s\n" "$N"

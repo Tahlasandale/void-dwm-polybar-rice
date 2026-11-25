@@ -70,7 +70,6 @@ static const char *termcmd[]       = { "alacritty", NULL };
 static const char *stcmd[]         = { "alacritty", NULL };
 static const char *lockcmd[]       = { "lock.sh", NULL };
 static const char *bartogglecmd[]  = { "toggle-bars.sh", NULL };
-static const char *themecmd[]      = { "nicotine-theme", "toggle", NULL };
 static const char *wallcmd[]       = { "next-wallpaper.sh", NULL };
 static const char *opencmd[]       = { "alacritty", "-e", "/home/bison/.local/bin/cdd-opencode.sh", NULL };
 static const char *volupcmd[]      = { "wpctl", "set-volume", "-l", "1.0", "@DEFAULT_AUDIO_SINK@", "5%+", NULL };
@@ -112,10 +111,6 @@ static const Key keys[] = {
 	/* 3. Verrouillage ecran (Super + l et Alt + l -> slock) */
 	{ MOD_SUPER,                    XK_l,            spawn,          {.v = lockcmd } },
 	{ MOD_ALT,                      XK_l,            spawn,          {.v = lockcmd } },
-
-	/* 3b. Bascule de theme (Super + t et Super + Maj + !) */
-	{ MOD_SUPER,                    XK_t,            spawn,          {.v = themecmd } },
-	{ MOD_SUPER|ShiftMask,          XK_exclam,       spawn,          {.v = themecmd } },
 
 	/* 3c. Rotation du fond d'ecran (Ctrl + ! et Super + !) */
 	{ MOD_CTRL,                     XK_exclam,       spawn,          {.v = wallcmd } },

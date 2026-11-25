@@ -43,7 +43,7 @@ if command -v pamixer >/dev/null 2>&1; then
     MUTE=$(pamixer --get-mute 2>/dev/null || echo "error")
     if [ "$MUTE" != "error" ]; then
         if [ "$MUTE" = "true" ]; then
-            printf "%%{F#6c7086}󰝟 Muet%%{F-}\n"
+            printf "%%{F#6c7086}%%{T6}󰝟%%{T-}%%{F-} Muet\n"
             exit 0
         fi
         VOL=$(pamixer --get-volume 2>/dev/null || echo "0")
@@ -59,10 +59,10 @@ if command -v pamixer >/dev/null 2>&1; then
         elif [ "$VOL" -gt 0 ]; then
             ICON="󰕿"
         else
-            printf "%%{F#6c7086}󰝟 0%%%%%%{F-}\n"
+            printf "%%{F#6c7086}%%{T6}󰝟%%{T-}%%{F-} 0%%\n"
             exit 0
         fi
-        printf "%s %s%%\n" "$ICON" "$VOL"
+        printf "%%{F#a6e3a1}%%{T6}%s%%{T-}%%{F-} %s%%\n" "$ICON" "$VOL"
         exit 0
     fi
 fi
@@ -72,7 +72,7 @@ if command -v wpctl >/dev/null 2>&1; then
     STATUS=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null || true)
     if [ -n "$STATUS" ]; then
         if echo "$STATUS" | grep -q "\[MUTED\]"; then
-            printf "%%{F#6c7086}󰝟 Muet%%{F-}\n"
+            printf "%%{F#6c7086}%%{T6}󰝟%%{T-}%%{F-} Muet\n"
             exit 0
         fi
         VOL_FLOAT=$(echo "$STATUS" | awk "{print \$2}")
@@ -88,10 +88,10 @@ if command -v wpctl >/dev/null 2>&1; then
         elif [ "$VOL" -gt 0 ]; then
             ICON="󰕿"
         else
-            printf "%%{F#6c7086}󰝟 0%%%%%%{F-}\n"
+            printf "%%{F#6c7086}%%{T6}󰝟%%{T-}%%{F-} 0%%\n"
             exit 0
         fi
-        printf "%s %s%%\n" "$ICON" "$VOL"
+        printf "%%{F#a6e3a1}%%{T6}%s%%{T-}%%{F-} %s%%\n" "$ICON" "$VOL"
         exit 0
     fi
 fi
@@ -101,7 +101,7 @@ OUT=$(amixer sget Master 2>/dev/null || true)
 if [ -n "$OUT" ]; then
     STATE=$(echo "$OUT" | grep -m1 -o "\[on\]\|\[off\]" | tr -d "[]" || echo "on")
     if [ "$STATE" = "off" ]; then
-        printf "%%{F#6c7086}󰝟 Muet%%{F-}\n"
+        printf "%%{F#6c7086}%%{T6}󰝟%%{T-}%%{F-} Muet\n"
         exit 0
     fi
     VOL=$(echo "$OUT" | grep -m1 -o "[0-9]*%" | tr -d "%" || echo "0")
@@ -113,11 +113,11 @@ if [ -n "$OUT" ]; then
     elif [ "$VOL" -gt 0 ]; then
         ICON="󰕿"
     else
-        printf "%%{F#6c7086}󰝟 0%%%%%%{F-}\n"
+        printf "%%{F#6c7086}%%{T6}󰝟%%{T-}%%{F-} 0%%\n"
         exit 0
     fi
-    printf "%s %s%%\n" "$ICON" "$VOL"
+    printf "%%{T6}%s%%{T-} %s%%\n" "$ICON" "$VOL"
     exit 0
 fi
 
-printf "󰕾 50%%\n"
+printf "%%{F#a6e3a1}%%{T6}󰕾%%{T-}%%{F-} 50%%\n"

@@ -29,9 +29,9 @@ if [ -n "$TITLE" ]; then
         TEXT="$(echo "$TEXT" | cut -c1-12)..."
     fi
     if [ "$STATUS" = "Paused" ]; then
-        printf " %s\n" "$TEXT"
+        printf "%%{F#f9e2af}%%{F-} %s\n" "$TEXT"
     else
-        printf " %s\n" "$TEXT"
+        printf "%%{F#a6e3a1}%%{F-} %s\n" "$TEXT"
     fi
 else
     printf ""

@@ -31,11 +31,11 @@ if echo "$SHOW" | grep -q "Powered: yes"; then
     CON=$(bluetoothctl devices Connected 2>/dev/null | head -n 1 | cut -d' ' -f3- || true)
     if [ -n "$CON" ]; then
         # Afficher l icone et le nom du peripherique connecte
-        printf " %s\n" "$(echo "$CON" | cut -c1-14)"
+        printf "%%{F#89b4fa}%%{T6}󰂯%%{T-}%%{F-} %s\n" "$(echo "$CON" | cut -c1-14)"
     else
-        printf "\n"
+        printf "%%{F#89b4fa}%%{T6}󰂯%%{T-}%%{F-}\n"
     fi
 else
     # Eteint : icone estompee
-    printf "%%{F#6c7086}%%{F-}\n"
+    printf "%%{F#6c7086}%%{T6}󰂯%%{T-}%%{F-}\n"
 fi

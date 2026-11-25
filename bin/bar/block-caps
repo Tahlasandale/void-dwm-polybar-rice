@@ -1,0 +1,20 @@
+#!/bin/sh
+# ~/.local/bin/bar/block-caps — État du verrouillage des majuscules
+if [ -z "$XDG_RUNTIME_DIR" ]; then export XDG_RUNTIME_DIR="/tmp/run-user-1000"; fi
+
+case "${BLOCK_BUTTON:-0}" in
+    1)
+        xdotool key Caps_Lock >/dev/null 2>&1 || true
+        polybar-msg action '#caps.exec' >/dev/null 2>&1 || true
+        exit 0
+        ;;
+esac
+
+STATE=$(xset q 2>/dev/null | sed -n 's/.*Caps Lock: *\([a-z]*\).*/\1/p' | head -n1)
+[ -z "$STATE" ] && STATE=$(xset q 2>/dev/null | awk '/Caps Lock:/ {print $4; exit}')
+
+if [ "$STATE" = "on" ]; then
+    printf "%%{F#a6e3a1}%%{T6}󰪛%%{T-}%%{F-}\n"
+else
+    printf "%%{F#6c7086}%%{T6}󰪛%%{T-}%%{F-}\n"
+fi

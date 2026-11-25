@@ -18,4 +18,4 @@ case "${BLOCK_BUTTON:-0}" in
 esac
 
 DATE_STR=$(date '+%d/%m/%Y %H:%M')
-printf " %s\n" "$DATE_STR"
+printf "%%{F#cba6f7}%%{T6}󰥔%%{T-}%%{F-} %s\n" "$DATE_STR"

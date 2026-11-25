@@ -1,6 +1,6 @@
 #!/bin/sh
+# Batterie : pourcentage / autonomie / jauge (shell pur, sans python3)
 if [ -z "$XDG_RUNTIME_DIR" ]; then export XDG_RUNTIME_DIR="/tmp/run-user-1000"; fi
-# Batterie intelligente : calcul pourcentage / temps restant et jauge
 MODE_FILE="$HOME/.cache/dwm-battery-mode"
 case "${BLOCK_BUTTON:-0}" in
     1)
@@ -13,75 +13,77 @@ case "${BLOCK_BUTTON:-0}" in
         ;;
 esac
 
-python3 -c "
-import os, glob
+BAT=""
+for b in /sys/class/power_supply/BAT*; do
+    if [ -d "$b" ]; then BAT=$b; break; fi
+done
 
-mode_file = os.path.expanduser('~/.cache/dwm-battery-mode')
-mode = 'percent'
-if os.path.exists(mode_file):
-    try:
-        with open(mode_file) as f:
-            mode = f.read().strip()
-    except Exception:
-        pass
+read_val() {
+    [ -n "$BAT" ] || { printf '%s' "$2"; return 0; }
+    if [ -r "$BAT/$1" ]; then cat "$BAT/$1" 2>/dev/null; else printf '%s' "$2"; fi
+}
 
-bats = glob.glob('/sys/class/power_supply/BAT*')
-if not bats:
-    print('%{F#6c7086} ' + f'{"AC":>5}' + '%{F-}')
-    exit(0)
+if [ -z "$BAT" ]; then
+    printf '%%{F#6c7086} %5s%%{F-}\n' "AC"
+    exit 0
+fi
 
-bat = bats[0]
-def read_val(name, default='0'):
-    p = os.path.join(bat, name)
-    if os.path.exists(p):
-        try:
-            with open(p) as f:
-                return f.read().strip()
-        except Exception:
-            pass
-    return default
+STATUS=$(read_val status Unknown)
+CAPACITY=$(read_val capacity 0)
+NOW=$(read_val charge_now "$(read_val energy_now 0)")
+FULL=$(read_val charge_full "$(read_val energy_full 0)")
+CURRENT=$(read_val current_now "$(read_val power_now 0)")
 
-status = read_val('status', 'Unknown')
-capacity = int(read_val('capacity', '0'))
-charge_now = int(read_val('charge_now', read_val('energy_now', '0')))
-charge_full = int(read_val('charge_full', read_val('energy_full', '0')))
-current_now = int(read_val('current_now', read_val('power_now', '0')))
+for NAME in CAPACITY NOW FULL CURRENT; do
+    eval "VAL=\$$NAME"
+    case "$VAL" in ''|*[!0-9]*) eval "$NAME=0" ;; esac
+done
 
-icons = ['󰁹', '󰁻', '󰁾', '󰂁', '󱊣']
-icon_idx = min(4, max(0, capacity // 20))
-base_icon = icons[icon_idx]
+ICON0='󰁹'; ICON1='󰁻'; ICON2='󰁾'; ICON3='󰂁'; ICON4='󱊣'
+IDX=$((CAPACITY / 20))
+[ "$IDX" -gt 4 ] && IDX=4
+case "$IDX" in
+    0) ICON=$ICON0 ;;
+    1) ICON=$ICON1 ;;
+    2) ICON=$ICON2 ;;
+    3) ICON=$ICON3 ;;
+    *) ICON=$ICON4 ;;
+esac
 
-time_str = ''
-if status == 'Discharging':
-    icon = base_icon
-    if current_now > 0:
-        h = charge_now / current_now
-        hours = int(h)
-        mins = int((h - hours) * 60)
-        time_str = f'{hours}h{mins:02d}m'
-    else:
-        time_str = f'{capacity}%'
-elif status == 'Charging':
-    icon = '󰂄'
-    if current_now > 0:
-        h = max(0, charge_full - charge_now) / current_now
-        hours = int(h)
-        mins = int((h - hours) * 60)
-        time_str = f'{hours}h{mins:02d}m'
-    else:
-        time_str = f'{capacity}%'
-elif status in ('Full', 'Plugged') or capacity >= 99:
-    icon = f'{base_icon}'
-    time_str = 'Plein'
-else:
-    icon = f'{base_icon}'
-    time_str = 'AC'
+TIME_STR=""
+case "$STATUS" in
+    Charging)
+        ICON='󰂄'
+        REMAIN=$((FULL - NOW))
+        [ "$REMAIN" -lt 0 ] && REMAIN=0
+        if [ "$CURRENT" -gt 0 ]; then
+            TOTAL_MIN=$(( (REMAIN * 60 + CURRENT / 2) / CURRENT ))
+            TIME_STR=$(printf '%dh%02dm' "$((TOTAL_MIN / 60))" "$((TOTAL_MIN % 60))")
+        else
+            TIME_STR="$CAPACITY%"
+        fi
+        ;;
+    Discharging)
+        if [ "$CURRENT" -gt 0 ]; then
+            TOTAL_MIN=$(( (NOW * 60 + CURRENT / 2) / CURRENT ))
+            TIME_STR=$(printf '%dh%02dm' "$((TOTAL_MIN / 60))" "$((TOTAL_MIN % 60))")
+        else
+            TIME_STR="$CAPACITY%"
+        fi
+        ;;
+    Full|Plugged)
+        TIME_STR='Plein'
+        ;;
+    *)
+        if [ "$CAPACITY" -ge 99 ]; then TIME_STR='Plein'; else TIME_STR='AC'; fi
+        ;;
+esac
 
-color = '#89b4fa'
+MODE=$(cat "$MODE_FILE" 2>/dev/null || echo "percent")
+if [ "$MODE" = "time" ] && [ -n "$TIME_STR" ]; then
+    VALUE="$TIME_STR"
+else
+    VALUE="$CAPACITY%"
+fi
 
-def tag(text):
-    return '%{F' + color + '}%{T6}' + text + '%{T-}%{F-}'
-
-value = time_str if (mode == 'time' and time_str) else f'{capacity}%'
-print(f'{tag(icon)} {value:>5}%{{F-}}')
-" 2>/dev/null || printf ""
+printf '%%{F#89b4fa}%%{T6}%s%%{T-}%%{F-} %5s%%{F-}\n' "$ICON" "$VALUE"

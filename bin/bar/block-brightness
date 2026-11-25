@@ -5,11 +5,9 @@ if [ -z "$XDG_RUNTIME_DIR" ]; then export XDG_RUNTIME_DIR="/tmp/run-user-1000"; 
 case "${BLOCK_BUTTON:-${BUTTON:-0}}" in
     4) # Molette haut = +5%
         brightnessctl --class=backlight set 5%+ >/dev/null 2>&1 || true
-        polybar-msg action "#brightness.exec" >/dev/null 2>&1 || true
         ;;
     5) # Molette bas = -5%
         brightnessctl --class=backlight set 5%- >/dev/null 2>&1 || true
-        polybar-msg action "#brightness.exec" >/dev/null 2>&1 || true
         ;;
 esac
 

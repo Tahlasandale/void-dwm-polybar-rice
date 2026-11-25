@@ -2,7 +2,7 @@
 #include <X11/XF86keysym.h>
 
 /* appearance */
-static const unsigned int borderpx  = 3;        /* border pixel of windows */
+static const unsigned int borderpx  = 5;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
@@ -18,12 +18,13 @@ static const char col_base[]        = "#1e1e2e";
 static const char col_mantle[]      = "#181825";
 static const char col_text[]        = "#cdd6f4";
 static const char col_pink[]        = "#f5c2e7";
-static const char col_sky[]         = "#89dceb";
+static const char col_active[]      = "#94e2d5";
+static const char col_inactive[]    = "#11111b";
 
 static const char *colors[][3]      = {
-	/*               fg         bg        border   */
-	[SchemeNorm] = { col_text,  col_base, col_sky  },
-	[SchemeSel]  = { col_base,  col_pink, col_pink },
+	/*               fg         bg        border      */
+	[SchemeNorm] = { col_text,  col_base, col_inactive },
+	[SchemeSel]  = { col_base,  col_pink, col_active   },
 };
 
 /* tagging (1 à 5 comme sur Sway) */
@@ -67,10 +68,8 @@ static const char *dmenucmd[]      = { "dmenu-drun", NULL };
 static const char *termcmd[]       = { "alacritty", NULL };
 static const char *stcmd[]         = { "alacritty", NULL };
 static const char *lockcmd[]       = { "slock", NULL };
-static const char *screenshotcmd[] = { "screenshot-area.sh", NULL };
 static const char *themecmd[]      = { "nicotine-theme", "toggle", NULL };
 static const char *wallcmd[]       = { "next-wallpaper.sh", NULL };
-static const char *clipcmd[]       = { "clipboard-history.sh", NULL };
 static const char *opencmd[]       = { "alacritty", "-e", "/home/bison/.local/bin/cdd-opencode.sh", NULL };
 static const char *volupcmd[]      = { "wpctl", "set-volume", "@DEFAULT_AUDIO_SINK@", "5%+", NULL };
 static const char *voldowncmd[]    = { "wpctl", "set-volume", "@DEFAULT_AUDIO_SINK@", "5%-", NULL };
@@ -95,7 +94,6 @@ static const Key keys[] = {
 	/* 2. Menu dmenu (Super + Espace / Ctrl + Espace / Alt + Espace / Alt + p) */
 	{ MOD_SUPER,                    XK_space,        spawn,          {.v = dmenucmd } },
 	{ MOD_CTRL,                     XK_space,        spawn,          {.v = dmenucmd } },
-	{ MOD_SUPER|ShiftMask,          XK_v,            spawn,          {.v = clipcmd } },
 	{ MOD_ALT,                      XK_space,        spawn,          {.v = dmenucmd } },
 	{ MOD_ALT,                      XK_p,            spawn,          {.v = dmenucmd } },
 
@@ -120,10 +118,6 @@ static const Key keys[] = {
 	/* 3c. Rotation du fond d'ecran (Ctrl + ! et Super + !) */
 	{ MOD_CTRL,                     XK_exclam,       spawn,          {.v = wallcmd } },
 	{ MOD_SUPER,                    XK_exclam,       spawn,          {.v = wallcmd } },
-
-	/* 3c. Capture d'ecran (Super + Maj + S et Print) */
-	{ MOD_SUPER|ShiftMask,          XK_s,            spawn,          {.v = screenshotcmd } },
-	{ 0,                            XK_Print,        spawn,          {.v = screenshotcmd } },
 
 	/* 4. Fermer la fenetre (Super + w comme sur l'hote Sway, et Alt + Shift + w / Alt + Shift + c) */
 	{ MOD_SUPER,                    XK_w,            killclient,     {0} },

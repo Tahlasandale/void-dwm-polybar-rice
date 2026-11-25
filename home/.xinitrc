@@ -1,6 +1,7 @@
 #!/bin/sh
 # Clavier AZERTY francais -- disposition Apple/Mac (fr(mac))
 setxkbmap -layout fr -variant mac 2>/dev/null || setxkbmap fr 2>/dev/null || true
+[ -f "$HOME/.Xresources" ] && xrdb -merge "$HOME/.Xresources" 2>/dev/null || true
 
 # Variables de session standard
 export XDG_CURRENT_DESKTOP=dwm

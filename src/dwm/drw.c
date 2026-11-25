@@ -4,6 +4,10 @@
 #include <string.h>
 #include <X11/Xlib.h>
 #include <X11/Xft/Xft.h>
+#include <X11/cursorfont.h>
+
+/* libXcursor runtime (pas de header de developpement installe) */
+Cursor XcursorLibraryLoadCursor(Display *dpy, const char *name);
 
 #include "drw.h"
 #include "util.h"
@@ -455,7 +459,10 @@ drw_cur_create(Drw *drw, int shape)
 	if (!drw || !(cur = ecalloc(1, sizeof(Cur))))
 		return NULL;
 
-	cur->cursor = XCreateFontCursor(drw->dpy, shape);
+	cur->cursor = XcursorLibraryLoadCursor(drw->dpy,
+		shape == XC_left_ptr ? "left_ptr" :
+		shape == XC_sizing   ? "sizing"   :
+		shape == XC_fleur    ? "fleur"    : "left_ptr");
 
 	return cur;
 }

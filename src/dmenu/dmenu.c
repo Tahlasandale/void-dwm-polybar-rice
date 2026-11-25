@@ -183,7 +183,7 @@ drawmenu(void)
 	if (lines > 0) {
 		/* draw vertical list */
 		for (item = curr; item != next; item = item->right)
-			drawitem(item, x, y += bh, mw - x);
+			drawitem(item, 0, y += bh, mw);
 	} else if (matches && curr) {
 		/* draw horizontal list */
 		x += inputw;
@@ -735,7 +735,7 @@ setup(void)
 	bh = drw->fonts->h + 2;
 	lines = MAX(lines, 0);
 	mh = (lines + 1) * bh;
-	promptw = (prompt && *prompt) ? TEXTW(prompt) - lrpad / 4 : 0;
+	promptw = (prompt && *prompt) ? TEXTW(prompt) : 0;
 #ifdef XINERAMA
 	i = 0;
 	if (parentwin == root && (info = XineramaQueryScreens(dpy, &n))) {
@@ -795,7 +795,7 @@ setup(void)
 			mw = wa.width;
 		}
 	}
-	promptw = (prompt && *prompt) ? TEXTW(prompt) - lrpad / 4 : 0;
+	promptw = (prompt && *prompt) ? TEXTW(prompt) : 0;
 	inputw = mw / 3; /* input width: ~33% of monitor width */
 	match();
 

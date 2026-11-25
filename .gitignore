@@ -1,0 +1,13 @@
+*.o
+*.pyc
+__pycache__/
+*.log
+.DS_Store
+
+# état live / secrets
+.bash_history
+.Xauthority
+.cache/
+
+# sous-dépôts éventuels (les sources sont copiées en plain)
+**/.git/

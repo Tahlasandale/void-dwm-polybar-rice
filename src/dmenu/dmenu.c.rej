@@ -1,0 +1,10 @@
+--- dmenu.c
++++ dmenu.c
+@@ -1,6 +1,7 @@
+ /* See LICENSE file for copyright and license details. */
+ #include <ctype.h>
+ #include <locale.h>
++#include <math.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>

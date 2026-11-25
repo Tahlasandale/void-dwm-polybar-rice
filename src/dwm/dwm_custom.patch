@@ -1,0 +1,44 @@
+--- dwm.c.orig
++++ dwm.c
+@@ -149,6 +149,8 @@
+ static void attachstack(Client *c);
+ static void buttonpress(XEvent *e);
+ static void checkotherwm(void);
++static void cycleview(const Arg *arg);
++static void movetoworkspace(const Arg *arg);
+ static void cleanup(void);
+ static void cleanupmon(Monitor *mon);
+ static void clientmessage(XEvent *e);
+@@ -2060,6 +2062,30 @@
+ 	XSetWMHints(dpy, c->win, &c->hints);
+ }
+ 
++void
++cycleview(const Arg *arg)
++{
++	unsigned int cur = selmon->tagset[selmon->seltags] & TAGMASK;
++	unsigned int next;
++	if (arg->i > 0) {
++		next = (cur << 1) & TAGMASK;
++		if (!next)
++			next = 1;
++	} else {
++		next = cur >> 1;
++		if (!next)
++			next = 1 << (LENGTH(tags) - 1);
++	}
++	Arg a = { .ui = next };
++	view(&a);
++}
++
++void
++movetoworkspace(const Arg *arg)
++{
++	if (selmon->sel)
++		tag(arg);
++	view(arg);
++}
++
+ void
+ view(const Arg *arg)
+ {

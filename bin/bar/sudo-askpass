@@ -1,0 +1,16 @@
+#!/bin/sh
+# ~/.local/bin/bar/sudo-askpass — saisie du mot de passe sudo dans dmenu.
+# Evite d'ouvrir un terminal pour les actions du menu Alimentation.
+# Note : dmenu n'a pas de masquage de saisie, le mot de passe s'affiche pendant la frappe.
+
+[ -n "${XDG_RUNTIME_DIR:-}" ] || export XDG_RUNTIME_DIR="/tmp/run-user-$(id -u)"
+
+DMENU="$HOME/.local/bin/dmenu"
+[ -x "$DMENU" ] || DMENU=dmenu
+
+PROMPT=${1:-"Mot de passe sudo: "}
+# Une ligne vide force l'ouverture de dmenu ; le texte saisi est renvoyé tel quel.
+ANSWER=$(printf '\n' | "$DMENU" -i -l 1 -p "$PROMPT" \
+    -nb "#1e1e2e" -nf "#cdd6f4" -sb "#94e2d5" -sf "#11111b") || exit 1
+
+[ -n "$ANSWER" ] && printf '%s\n' "$ANSWER"

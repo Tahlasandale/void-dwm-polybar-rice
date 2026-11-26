@@ -6,17 +6,8 @@ case "${BLOCK_BUTTON:-0}" in
         TODAY=$(date '+%A %d %B %Y' | awk '{print toupper(substr($0,1,1)) substr($0,2)}')
         notify-send -t 5000 "Aujourd'hui" "$TODAY" >/dev/null 2>&1 &
         ;;
-    3) # Clic droit = menu extinction
-        alacritty -T "Menu Alimentation" -e sh -c '
-            printf "1. Verrouiller (lock.sh)\n2. Mettre en veille (zzz)\n3. Redemarrer\n4. Eteindre\nChoix: ";
-            read c;
-            case "$c" in
-                1) lock.sh ;;
-                2) sudo zzz ;;
-                3) sudo reboot ;;
-                4) sudo poweroff ;;
-            esac
-        ' &
+    3) # Clic droit = menu extinction en fenêtre dmenu (plus de terminal)
+        /home/bison/.local/bin/bar/power-menu &
         ;;
 esac
 

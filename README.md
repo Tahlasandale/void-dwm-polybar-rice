@@ -58,6 +58,7 @@ pkill -x dwm   # puis relancer la session
 - zram : `zramen` (zstd, ~2 GiB, priorité 32767) activé via `/var/service/zramen`, conf liée depuis `system/zramen.conf`.
 - Swap zram : `vm.swappiness=100` et `vm.page-cluster=0` via `system/99-zram.conf`, lié dans `/etc/sysctl.d/` et appliqué au boot par `/etc/runit/core-services/08-sysctl.sh`. Compression mesurée : `DATA ≈ 3 × COMPR`.
 - dmenu : prompt aligné sur les entrées, palette Catppuccin + coins arrondis compilés.
+- Alimentation : clic droit sur l'horloge → `bar/power-menu` (fenêtre dmenu, plus de terminal) ; le mot de passe sudo est demandé par `bar/sudo-askpass` via dmenu.
 - Bordures dwm : active `#94e2d5`, inactive `#11111b`, épaisseur 5 px.
 - Presse-papiers : `sxhkd` `Win+Maj+V` → `clipboard-history.sh` (`clipmenu`), `clipmenud` au login ; captures = image en CLIPBOARD + chemin en PRIMARY.
 - Yazi : wrapper qui force le driver Chafa sous X11/Alacritty.

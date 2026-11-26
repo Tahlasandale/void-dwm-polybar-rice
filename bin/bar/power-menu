@@ -1,0 +1,38 @@
+#!/bin/sh
+# ~/.local/bin/bar/power-menu — menu d'alimentation en fenêtre dmenu (style drun).
+# Remplace l'ancien menu Alacritty du clic droit sur le bloc horloge.
+
+[ -n "${XDG_RUNTIME_DIR:-}" ] || export XDG_RUNTIME_DIR="/tmp/run-user-$(id -u)"
+
+DMENU="$HOME/.local/bin/dmenu"
+[ -x "$DMENU" ] || DMENU=dmenu
+
+NB="#1e1e2e"
+NF="#cdd6f4"
+SB="#94e2d5"
+SF="#11111b"
+
+CHOICE=$(printf '%s\n' \
+    '󰌾 Verrouiller' \
+    '󰾆 Mettre en veille' \
+    '󰀴 Redémarrer' \
+    '󰁀 Éteindre' |
+    "$DMENU" -i -l 4 -p "Alimentation:" -nb "$NB" -nf "$NF" -sb "$SB" -sf "$SF") || exit 0
+
+case "$CHOICE" in
+    *Verrouiller*)
+        exec "$HOME/.local/bin/lock.sh"
+        ;;
+    *veille*|*Veille*)
+        export SUDO_ASKPASS="$HOME/.local/bin/bar/sudo-askpass"
+        exec sudo -A zzz
+        ;;
+    *Redémarrer*)
+        export SUDO_ASKPASS="$HOME/.local/bin/bar/sudo-askpass"
+        exec sudo -A reboot
+        ;;
+    *Éteindre*|*Eteindre*)
+        export SUDO_ASKPASS="$HOME/.local/bin/bar/sudo-askpass"
+        exec sudo -A poweroff
+        ;;
+esac

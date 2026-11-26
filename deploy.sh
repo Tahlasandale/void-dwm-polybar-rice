@@ -28,6 +28,27 @@ link() {
     echo "LIEN $dst -> $src"
 }
 
+link_root() {
+    src=$1
+    dst=$2
+    if [ "$(sudo readlink "$dst" 2>/dev/null || true)" = "$src" ]; then
+        return
+    fi
+    if sudo test -e "$dst" || sudo test -L "$dst"; then
+        if [ "$FORCE" -ne 1 ]; then
+            echo "SKIP ROOT $dst (existe)"
+            return
+        fi
+        rel=${dst#/}
+        mkdir -p "$BACKUP/root/$(dirname "$rel")"
+        sudo cp -a "$dst" "$BACKUP/root/$rel" 2>/dev/null || true
+        sudo rm -f "$dst"
+    fi
+    sudo mkdir -p "$(dirname "$dst")"
+    sudo ln -s "$src" "$dst"
+    echo "LIEN ROOT $dst -> $src"
+}
+
 for f in "$ROOT"/home/.*; do
     base=$(basename "$f")
     [ "$base" = "." ] && continue
@@ -69,5 +90,8 @@ done
 
 mkdir -p "$HOME/Images"
 link "$ROOT/wallpapers" "$HOME/Images/wallpapers"
+
+link_root "$ROOT/system/zramen.conf" /etc/sv/zramen/conf
+link_root "$ROOT/system/99-zram.conf" /etc/sysctl.d/99-zram.conf
 
 echo "Terminé. Sauvegardes (si --force) : $BACKUP"

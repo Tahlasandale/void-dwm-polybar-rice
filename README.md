@@ -12,7 +12,7 @@ Les fichiers sont copiés **tels quels** : aucun correctif, aucun tri de mes cha
 - `wallpapers/` : les 5 images de `~/Images/wallpapers`
 - `fonts/` : JetBrainsMono Nerd Font, Font Awesome 6 et Maple Mono NF (Regular/Bold/Italic)
 - `tools/opt/` : payloads locaux `xclip`, `chafa` + libs
-- `system/pkglist.txt` : paquets installés explicitement (`xbps-query -m`)
+- `system/` : `pkglist.txt` (paquets installés explicitement, `xbps-query -m`) et configs root (clavier, grub, keyd, `zramen.conf`, `99-zram.conf`)
 
 ## Exclusions volontaires
 
@@ -32,6 +32,8 @@ Les fichiers sont copiés **tels quels** : aucun correctif, aucun tri de mes cha
 ./deploy.sh --force     # sauvegarde dans ~/.rice-backup/<horodatage> avant de remplacer
 ```
 
+`deploy.sh` gère aussi les configs root via `sudo` ; le premier déploiement de `zramen.conf` nécessite `--force` pour remplacer le fichier du paquet par un lien.
+
 ## Rebuild des binaires locaux
 
 ```sh
@@ -45,8 +47,12 @@ pkill -x dwm   # puis relancer la session
 - Clavier : `setxkbmap -layout fr -variant mac` (inchangé).
 - Curseur : `Xcursor.size: 48`, `xrdb -merge ~/.Xresources` au login, GTK `prefer-dark`.
 - Rotation fonds : `Ctrl+!` → `next-wallpaper.sh`, dossier `~/Images/wallpapers`.
-- Polybar : style `cuts` (adi1090x) à **deux barres** (`top` gérée par dwm, `bottom` indépendante), fond translucide `#cc1e1e2e`, modules `#11111b`, primaire `#94e2d5` ; dwm réserve 28 px en bas. Anciennes configs dans `backups/polybar-*.tar.gz`.
-- Barres : `Super+b` / `Alt+Maj+b` masque les deux via `toggle-bars.sh`.
+- Polybar : style `cuts` (adi1090x), une seule barre active (`top` ; `[bar/main]` reste en config), fond ARGB `#3374c7ec` (alpha `0x33`) rendu translucide par Picom, modules `#11111b`, primaire `#94e2d5` ; dwm réserve 28 px en bas. Anciennes configs dans `backups/polybar-*.tar.gz`.
+- Barres : `Super+b` / `Alt+Maj+b` masque/affiche les barres via `toggle-bars.sh`.
+- Picom : `picom -b --backend glx` au login (transparence réelle ; fallback `xrender`).
+- Énergie : TLP 1.10.2 activé via runit (`performance/AC` sur secteur, bascule auto sur batterie) ; powertop/mbpfan non installés ; ventilateur piloté par `applesmc`.
+- zram : `zramen` (zstd, ~2 GiB, priorité 32767) activé via `/var/service/zramen`, conf liée depuis `system/zramen.conf`.
+- Swap zram : `vm.swappiness=100` et `vm.page-cluster=0` via `system/99-zram.conf`, lié dans `/etc/sysctl.d/` et appliqué au boot par `/etc/runit/core-services/08-sysctl.sh`. Compression mesurée : `DATA ≈ 3 × COMPR`.
 - dmenu : prompt aligné sur les entrées, palette Catppuccin + coins arrondis compilés.
 - Bordures dwm : active `#94e2d5`, inactive `#11111b`, épaisseur 5 px.
 - Presse-papiers : `sxhkd` `Win+Maj+V` → `clipboard-history.sh` (`clipmenu`), `clipmenud` au login ; captures = image en CLIPBOARD + chemin en PRIMARY.

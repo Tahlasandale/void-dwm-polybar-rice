@@ -50,7 +50,11 @@ pkill -x dwm   # puis relancer la session
 - Polybar : style `cuts` (adi1090x), une seule barre active (`top` ; `[bar/main]` reste en config), fond ARGB `#3374c7ec` (alpha `0x33`) rendu translucide par Picom, modules `#11111b`, primaire `#94e2d5` ; dwm réserve 28 px en bas. Anciennes configs dans `backups/polybar-*.tar.gz`.
 - Barres : `Super+b` / `Alt+Maj+b` masque/affiche les barres via `toggle-bars.sh`.
 - Picom : `picom -b --backend glx` au login (transparence réelle ; fallback `xrender`).
-- Énergie : TLP 1.10.2 activé via runit (`performance/AC` sur secteur, bascule auto sur batterie) ; powertop/mbpfan non installés ; ventilateur piloté par `applesmc`.
+- Énergie & Autonomie : TLP 1.10.2 activé via runit. Optimisation PCIe ASPM dynamique via `system/00-macbook-aspm.conf` lié dans `/etc/tlp.d/` (`PCIE_ASPM_ON_BAT=powersave`, `PCIE_ASPM_ON_AC=default`). Mesures réelles de consommation au repos sur batterie à 50% de luminosité (1389/2777, Firefox fermé) :
+  - Baseline initiale (scripts Polybar Python) : 8,98 W (~6,0h d'autonomie)
+  - Polybar optimisée en pur shell (`8e27f6f`) : 5,06 W (~10,6h d'autonomie)
+  - PCIe ASPM `powersave` activé : **3,66 W** (~14,7h d'autonomie théorique sur batterie 54 Wh)
+  - Ventilateur piloté par `applesmc`.
 - zram : `zramen` (zstd, ~2 GiB, priorité 32767) activé via `/var/service/zramen`, conf liée depuis `system/zramen.conf`.
 - Swap zram : `vm.swappiness=100` et `vm.page-cluster=0` via `system/99-zram.conf`, lié dans `/etc/sysctl.d/` et appliqué au boot par `/etc/runit/core-services/08-sysctl.sh`. Compression mesurée : `DATA ≈ 3 × COMPR`.
 - dmenu : prompt aligné sur les entrées, palette Catppuccin + coins arrondis compilés.

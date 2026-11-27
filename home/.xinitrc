@@ -27,9 +27,10 @@ if command -v pipewire >/dev/null 2>&1; then
     pipewire-pulse &
 fi
 
-# Syncthing en arriere-plan
-if command -v syncthing >/dev/null 2>&1; then
-    syncthing --no-browser &
+# Syncthing et Tailscale : desactives au demarrage, bascule via les boutons de la barre
+# (ici on s'assure seulement que Tailscale retombe si une session precedente l'avait laisse actif)
+if command -v tailscale >/dev/null 2>&1; then
+    (for i in 1 2 3 4 5; do tailscale down >/dev/null 2>&1 && break; sleep 2; done) &
 fi
 
 # Compositeur Picom (ombres et fluidite sans lag)

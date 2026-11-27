@@ -1,12 +1,11 @@
 #!/bin/sh
 # ~/.local/bin/clipboard-history.sh — Menu historique presse-papier (Win + Maj + V)
 
-# Harmoniser le répertoire avec clipmenud (lancé par .xinitrc)
+# Même XDG_RUNTIME_DIR que clipmenud : clipmenu ajoute lui-même /clipmenu.6.$USER.
 XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/tmp/run-user-$(id -u)}"
 export XDG_RUNTIME_DIR
 mkdir -p "$XDG_RUNTIME_DIR" 2>/dev/null || true
 chmod 700 "$XDG_RUNTIME_DIR" 2>/dev/null || true
-export CM_DIR="$XDG_RUNTIME_DIR/clipmenu.6.$USER"
 
 export CM_LAUNCHER=dmenu
 export CM_HISTLENGTH=50

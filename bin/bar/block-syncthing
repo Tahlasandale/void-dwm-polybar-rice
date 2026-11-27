@@ -1,26 +1,32 @@
 #!/bin/sh
 if [ -z "$XDG_RUNTIME_DIR" ]; then export XDG_RUNTIME_DIR="/tmp/run-user-1000"; fi
-# Syncthing
+# Syncthing : bascule au clic, notification, état dans la barre.
+
 case "${BLOCK_BUTTON:-0}" in
     1)
         if pgrep -x syncthing >/dev/null 2>&1; then
             pkill -x syncthing 2>/dev/null || true
+            sleep 1
+            notify-send -u low -t 2500 "Syncthing" "Désactivé" >/dev/null 2>&1 &
         else
-            syncthing --no-browser &
+            syncthing --no-browser >/dev/null 2>&1 &
+            sleep 1
+            if pgrep -x syncthing >/dev/null 2>&1; then
+                notify-send -u low -t 2500 "Syncthing" "Activé" >/dev/null 2>&1 &
+            fi
         fi
-        sleep 0.5
         ;;
     3)
         if ! pgrep -x syncthing >/dev/null 2>&1; then
-            syncthing --no-browser &
+            syncthing --no-browser >/dev/null 2>&1 &
             sleep 1
         fi
-        firefox "http://localhost:8384" &
+        firefox "http://localhost:8384" >/dev/null 2>&1 &
         ;;
 esac
 
 if pgrep -x syncthing >/dev/null 2>&1; then
-    printf "%%{F#94e2d5}%%{F-}\n"
+    printf "%%{F#94e2d5}%%{T6}%%{T-}%%{F-}\n"
 else
-    printf ""
+    printf "%%{F#6c7086}%%{T6}%%{T-}%%{F-}\n"
 fi

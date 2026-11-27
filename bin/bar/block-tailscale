@@ -1,0 +1,38 @@
+#!/bin/sh
+# Tailscale : état dans la barre et bascule au clic (avec notification).
+if [ -z "$XDG_RUNTIME_DIR" ]; then export XDG_RUNTIME_DIR="/tmp/run-user-$(id -u)"; fi
+
+ICON='󰘧'
+ON='#a6e3a1'
+OFF='#6c7086'
+
+ts_ip() {
+    tailscale ip -4 2>/dev/null | head -1
+}
+
+case "${BLOCK_BUTTON:-0}" in
+    1)
+        if [ -n "$(ts_ip)" ]; then
+            tailscale down >/dev/null 2>&1
+            notify-send -u low -t 2500 "Tailscale" "Désactivé" >/dev/null 2>&1 &
+        else
+            OUT=$(tailscale up 2>&1)
+            URL=$(printf '%s\n' "$OUT" | grep -oE 'https://[^ ]+' | head -1)
+            if [ -n "$URL" ]; then
+                printf '%s' "$URL" | xclip -selection clipboard 2>/dev/null || true
+                notify-send -u normal -t 10000 "Tailscale" "URL d'authentification copiée" >/dev/null 2>&1 &
+            elif [ -n "$(ts_ip)" ]; then
+                notify-send -u low -t 2500 "Tailscale" "Activé — $(ts_ip)" >/dev/null 2>&1 &
+            else
+                notify-send -u low -t 2500 "Tailscale" "Connexion en attente" >/dev/null 2>&1 &
+            fi
+        fi
+        ;;
+esac
+
+IP=$(ts_ip)
+if [ -n "$IP" ]; then
+    printf '%%{F%s}%%{T6}%s%%{T-}%%{F-} %s\n' "$ON" "$ICON" "$IP"
+else
+    printf '%%{F%s}%%{T6}%s%%{T-}%%{F-} off\n' "$OFF" "$ICON"
+fi

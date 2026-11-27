@@ -2,6 +2,7 @@
 # Batterie : pourcentage / autonomie / jauge (shell pur, sans python3)
 if [ -z "$XDG_RUNTIME_DIR" ]; then export XDG_RUNTIME_DIR="/tmp/run-user-1000"; fi
 MODE_FILE="$HOME/.cache/dwm-battery-mode"
+SHOW_INFO=0
 case "${BLOCK_BUTTON:-0}" in
     1)
         CUR=$(cat "$MODE_FILE" 2>/dev/null || echo "percent")
@@ -10,6 +11,10 @@ case "${BLOCK_BUTTON:-0}" in
         else
             echo "percent" > "$MODE_FILE"
         fi
+        SHOW_INFO=1
+        ;;
+    3)
+        SHOW_INFO=1
         ;;
 esac
 
@@ -24,6 +29,7 @@ read_val() {
 }
 
 if [ -z "$BAT" ]; then
+    [ "$SHOW_INFO" -eq 1 ] && notify-send -u low -t 3000 "Batterie" "Alimentation secteur (AC)" >/dev/null 2>&1 &
     printf '%%{F#6c7086} %5s%%{F-}\n' "AC"
     exit 0
 fi
@@ -34,7 +40,7 @@ NOW=$(read_val charge_now "$(read_val energy_now 0)")
 FULL=$(read_val charge_full "$(read_val energy_full 0)")
 CURRENT=$(read_val current_now "$(read_val power_now 0)")
 
-for NAME in CAPACITY NOW FULL CURRENT; do
+for NAME in CAPA NOW FULL CURRENT; do
     eval "VAL=\$$NAME"
     case "$VAL" in ''|*[!0-9]*) eval "$NAME=0" ;; esac
 done
@@ -78,6 +84,26 @@ case "$STATUS" in
         if [ "$CAPACITY" -ge 99 ]; then TIME_STR='Plein'; else TIME_STR='AC'; fi
         ;;
 esac
+
+if [ "$SHOW_INFO" -eq 1 ]; then
+    case "$STATUS" in
+        Charging) LSTATUS='En charge' ;;
+        Discharging) LSTATUS='Décharge' ;;
+        Full|Plugged) LSTATUS='Pleine' ;;
+        *) LSTATUS="$STATUS" ;;
+    esac
+    if [ -r "$BAT/current_now" ] && [ "$CURRENT" -gt 0 ]; then
+        CUR_TEXT="$((CURRENT / 1000)) mA"
+    elif [ "$CURRENT" -gt 0 ]; then
+        CUR_TEXT="$((CURRENT / 1000000)) W"
+    else
+        CUR_TEXT='n/a'
+    fi
+    CYCLES=$(read_val cycle_count '?')
+    INFO=$(printf 'Batterie : %s %% (%s)\nAutonomie : %s\nCourant : %s\nCycles : %s' \
+        "$CAPACITY" "$LSTATUS" "$TIME_STR" "$CUR_TEXT" "$CYCLES")
+    notify-send -u low -t 6000 "Batterie" "$INFO" >/dev/null 2>&1 &
+fi
 
 MODE=$(cat "$MODE_FILE" 2>/dev/null || echo "percent")
 if [ "$MODE" = "time" ] && [ -n "$TIME_STR" ]; then

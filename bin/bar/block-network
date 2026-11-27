@@ -1,47 +1,116 @@
 #!/bin/sh
 if [ -z "$XDG_RUNTIME_DIR" ]; then export XDG_RUNTIME_DIR="/tmp/run-user-$(id -u)"; fi
 
-# Clic gauche ou droit : ouvrir nmtui
+DMENU="$HOME/.local/bin/dmenu"
+[ -x "$DMENU" ] || DMENU=dmenu
+NB="#1e1e2e"; NF="#cdd6f4"; SB="#94e2d5"; SF="#11111b"
+
+notify() {
+    notify-send -u low -t 4000 "Wi-Fi" "$1" >/dev/null 2>&1
+}
+
+menu_list() {
+    "$DMENU" -i -l "$1" -p "$2" -nb "$NB" -nf "$NF" -sb "$SB" -sf "$SF"
+}
+
+menu_input() {
+    printf '\n' | "$DMENU" -i -l 1 -p "$1" -nb "$NB" -nf "$NF" -sb "$SB" -sf "$SF"
+}
+
+connect_known() {
+    NAME=$1
+    [ -n "$NAME" ] || return 1
+    EAP=$(nmcli -g 802-1x.eap con show "$NAME" 2>/dev/null)
+    KEY=$(nmcli -g 802-11-wireless-security.key-mgmt con show "$NAME" 2>/dev/null)
+
+    if nmcli con up "$NAME" >/dev/null 2>&1; then
+        notify "Connecté à $NAME"
+        return 0
+    fi
+
+    if [ -n "$EAP" ] && [ "$EAP" != "--" ]; then
+        PASS=$(menu_input "Mot de passe $NAME")
+        [ -n "$PASS" ] || { notify "Connexion annulée"; return 1; }
+        nmcli con modify "$NAME" 802-1x.password "$PASS" 2>/dev/null
+        P=$NAME
+    elif [ -z "$KEY" ] || [ "$KEY" = "--" ] || [ "$KEY" = "none" ]; then
+        notify "Échec : $NAME"
+        return 1
+    else
+        PASS=$(menu_input "Mot de passe Wi-Fi $NAME")
+        [ -n "$PASS" ] || { notify "Connexion annulée"; return 1; }
+        nmcli con modify "$NAME" 802-11-wireless-security.psk "$PASS" 2>/dev/null
+        P=$NAME
+    fi
+
+    if nmcli con up "${P:-$NAME}" >/dev/null 2>&1; then
+        notify "Connecté à $NAME (mot de passe enregistré)"
+    else
+        notify "Échec : $NAME"
+        return 1
+    fi
+}
+
+connect_new() {
+    SSID=$1
+    SEC=$2
+    [ -n "$SSID" ] || return 1
+    if [ -z "$SEC" ] || [ "$SEC" = "--" ]; then
+        if nmcli dev wifi connect "$SSID" >/dev/null 2>&1; then
+            notify "Connecté à $SSID"
+        else
+            notify "Échec : $SSID"
+        fi
+        return 0
+    fi
+    PASS=$(menu_input "Mot de passe Wi-Fi $SSID")
+    [ -n "$PASS" ] || { notify "Connexion annulée"; return 1; }
+    if nmcli dev wifi connect "$SSID" password "$PASS" name "$SSID" >/dev/null 2>&1; then
+        notify "Connecté à $SSID (mot de passe enregistré)"
+    else
+        notify "Échec : $SSID"
+    fi
+}
+
 case "${BLOCK_BUTTON:-0}" in
-    1|3) alacritty -T "Network Manager" -e nmtui & ;;
+    1)
+        CHOICE=$(nmcli -t -f NAME,TYPE con show 2>/dev/null | awk -F: '$2=="wifi"{print $1}' | menu_list 12 "Wi-Fi connu:") || exit 0
+        connect_known "$CHOICE"
+        ;;
+    3)
+        LIST=$(nmcli -t -f SSID,SIGNAL,SECURITY dev wifi list --rescan auto 2>/dev/null |
+            awk -F: 'NF>=2 && $1!="" {printf "%s\t%s%%\t%s\n", $1, $2, $3}')
+        [ -n "$LIST" ] || { notify "Aucun réseau visible"; exit 0; }
+        CHOICE=$(printf '%s\n' "$LIST" | menu_list 12 "Réseaux:") || exit 0
+        SSID=$(printf '%s\n' "$CHOICE" | cut -f1)
+        SEC=$(printf '%s\n' "$CHOICE" | cut -f3)
+        if nmcli -t -f NAME con show 2>/dev/null | grep -Fxq "$SSID"; then
+            connect_known "$SSID"
+        else
+            connect_new "$SSID" "$SEC"
+        fi
+        ;;
 esac
 
-# Trouver l interface par defaut (routeur)
+# Trouver l'interface par defaut (routeur)
 DEV=$(ip -4 route show default 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="dev") print $(i+1); exit}')
 
 if [ -z "$DEV" ]; then
-    # Aucun acces reseau
-    printf "%%{F#6c7086}%%{T6}󰤭%%{T-}%%{F-} %14s%%{F-}\n" "Off"
+    printf '%%{F#6c7086}%%{T6}󰤭%%{T-}%%{F-} off\n'
     exit 0
 fi
 
-# Verifier si l interface est sans-fil
 IS_WIRELESS=0
 if [ -d "/sys/class/net/$DEV/wireless" ] || [ -d "/sys/class/net/$DEV/phy80211" ]; then
     IS_WIRELESS=1
 fi
 
 if [ "$IS_WIRELESS" -eq 1 ]; then
-    # Obtenir le SSID de maniere instantanee via NetworkManager
     SSID=$(nmcli -t -f DEVICE,TYPE,STATE,CONNECTION dev 2>/dev/null | awk -F: -v d="$DEV" '$1==d && $2=="wifi" && $3=="connected" {print $4; exit}')
-    
-    # Fallback iw si SSID vide
-    if [ -z "$SSID" ]; then
-        SSID=$(iw dev "$DEV" link 2>/dev/null | awk '/SSID:/ {print $2; exit}')
-    fi
-    
-    # Fallback nmcli dev wifi
-    if [ -z "$SSID" ]; then
-        SSID=$(nmcli -t -f active,ssid dev wifi 2>/dev/null | awk -F: '$1=="yes" {print $2; exit}')
-    fi
-
-    if [ -n "$SSID" ]; then
-        SHORT_SSID=$(echo "$SSID" | cut -c1-14)
-        printf "%%{F#89b4fa}%%{T6}󰖩%%{T-}%%{F-} %14s%%{F-}\n" "$SHORT_SSID"
-    else
-        printf "%%{F#89b4fa}%%{T6}󰖩%%{T-}%%{F-} %14s%%{F-}\n" "Connecté"
-    fi
+    [ -z "$SSID" ] && SSID=$(iw dev "$DEV" link 2>/dev/null | awk '/SSID:/ {print $2; exit}')
+    [ -z "$SSID" ] && SSID=$(nmcli -t -f active,ssid dev wifi 2>/dev/null | awk -F: '$1=="yes" {print $2; exit}')
+    SHORT_SSID=$(printf '%s' "${SSID:-Connecté}" | cut -c1-18)
+    printf '%%{F#89b4fa}%%{T6}󰖩%%{T-}%%{F-} %s\n' "$SHORT_SSID"
 else
-    # Interface filaire Ethernet reelle
-    printf "%%{F#89b4fa}%%{T6}󰈀%%{T-}%%{F-} %14s%%{F-}\n" "$DEV"
+    printf '%%{F#89b4fa}%%{T6}󰈀%%{T-}%%{F-} %s\n' "$DEV"
 fi

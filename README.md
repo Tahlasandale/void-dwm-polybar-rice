@@ -59,6 +59,11 @@ pkill -x dwm   # puis relancer la session
 - Swap zram : `vm.swappiness=100` et `vm.page-cluster=0` via `system/99-zram.conf`, lié dans `/etc/sysctl.d/` et appliqué au boot par `/etc/runit/core-services/08-sysctl.sh`. Compression mesurée : `DATA ≈ 3 × COMPR`.
 - dmenu : prompt aligné sur les entrées, palette Catppuccin + coins arrondis compilés.
 - Alimentation : clic droit sur l'horloge → `bar/power-menu` (fenêtre dmenu, plus de terminal) ; le mot de passe sudo est demandé par `bar/sudo-askpass` via dmenu.
+- Wi-Fi : le SSID est collé à l'icône ; clic gauche = connexions connues, clic droit = scan, le mot de passe est saisi dans dmenu puis enregistré par NetworkManager.
+- Tailscale : `tailscaled` activé via runit, `bison` déclaré opérateur ; module dans la barre avec bascule au clic + notification et URL d'auth copiée dans le presse-papiers.
+- Syncthing : module dans la barre avec bascule au clic + notification (clic droit ouvre l'interface web).
+- Batterie : clic gauche alterne `%` / autonomie et affiche toutes les infos en notification (clic droit = infos sans bascule).
+- Firefox : `user.js` dans `~/.config/mozilla/firefox/<profil>/` (process count 4/1, déchargement des onglets inactifs, undo réduit à 3), appliqué au démarrage.
 - Bordures dwm : active `#94e2d5`, inactive `#11111b`, épaisseur 5 px.
 - Presse-papiers : `sxhkd` `Win+Maj+V` → `clipboard-history.sh` (`clipmenu`), `clipmenud` au login ; captures = image en CLIPBOARD + chemin en PRIMARY.
 - Yazi : wrapper qui force le driver Chafa sous X11/Alacritty.

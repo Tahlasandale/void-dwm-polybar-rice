@@ -58,10 +58,12 @@ pkill -x dwm   # puis relancer la session
 - zram : `zramen` (zstd, ~2 GiB, priorité 32767) activé via `/var/service/zramen`, conf liée depuis `system/zramen.conf`.
 - Swap zram : `vm.swappiness=100` et `vm.page-cluster=0` via `system/99-zram.conf`, lié dans `/etc/sysctl.d/` et appliqué au boot par `/etc/runit/core-services/08-sysctl.sh`. Compression mesurée : `DATA ≈ 3 × COMPR`.
 - dmenu : prompt aligné sur les entrées, palette Catppuccin + coins arrondis compilés.
-- Alimentation : clic droit sur l'horloge → `bar/power-menu` (fenêtre dmenu, plus de terminal) ; le mot de passe sudo est demandé par `bar/sudo-askpass` via dmenu.
-- Wi-Fi : le SSID est collé à l'icône ; clic gauche = connexions connues, clic droit = scan, le mot de passe est saisi dans dmenu puis enregistré par NetworkManager.
+- Alimentation : clic droit sur l'horloge → `bar/power-menu` (fenêtre dmenu, plus de terminal) ; le mot de passe sudo est demandé par `bar/sudo-askpass` via dmenu. Le bouton power à droite de la barre ouvre le même menu.
+- Réveil : `system/zzz.d/40-lock.sh` (lié dans `/etc/zzz.d/suspend/`) lance `lock.sh` avant la mise en veille, donc l'écran est déjà verrouillé au réveil.
+- Wi-Fi : le SSID est collé à l'icône ; clic gauche = connexions connues, clic droit = scan, le mot de passe est saisi dans dmenu puis enregistré par NetworkManager. Profil `eduroam` (PEAP/MSCHAPv2, identité `joseph.humbert@universite-paris-saclay.fr`, CA HARICA, `DNS:radius.di.u-psud.fr`, mot de passe stocké) présent dans la liste et connectable au clic.
 - Tailscale : `tailscaled` activé via runit, `bison` déclaré opérateur ; icône VPN seule dans la barre (bleu `#89b4fa` si actif, gris `#6c7086` si désactivé), bascule au clic + notification, URL d'auth copiée dans le presse-papiers. Désactivé au démarrage (`tailscale down` dans `.xinitrc`).
 - Syncthing : module dans la barre avec bascule au clic + notification (clic droit ouvre l'interface web), icône bleue `#89b4fa` comme les autres quand actif, grise sinon. Désactivé au démarrage (plus de lancement automatique dans `.xinitrc`).
+- Barre : îlots compacts (`format-padding = 0`), séparateurs à largeur fixe `%{O3}`/`%{O5}` au lieu des triangles, SSID/batterie/date à largeur fixe pour éviter tout décalage.
 - Verrouillage : `lock.sh` centre l'heure, la date et les messages d'état dans le cercle (`*{-pos}` + alignement 0, correction de la ligne de base).
 - Batterie : clic gauche alterne `%` / autonomie et affiche toutes les infos en notification (clic droit = infos sans bascule).
 - Firefox : `user.js` dans `~/.config/mozilla/firefox/<profil>/` (process count 4/1, déchargement des onglets inactifs, undo réduit à 3), appliqué au démarrage.

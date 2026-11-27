@@ -109,8 +109,8 @@ if [ "$IS_WIRELESS" -eq 1 ]; then
     SSID=$(nmcli -t -f DEVICE,TYPE,STATE,CONNECTION dev 2>/dev/null | awk -F: -v d="$DEV" '$1==d && $2=="wifi" && $3=="connected" {print $4; exit}')
     [ -z "$SSID" ] && SSID=$(iw dev "$DEV" link 2>/dev/null | awk '/SSID:/ {print $2; exit}')
     [ -z "$SSID" ] && SSID=$(nmcli -t -f active,ssid dev wifi 2>/dev/null | awk -F: '$1=="yes" {print $2; exit}')
-    SHORT_SSID=$(printf '%s' "${SSID:-Connecté}" | cut -c1-18)
+    SHORT_SSID=$(printf '%-12.12s' "${SSID:-Connecté}")
     printf '%%{F#89b4fa}%%{T6}󰖩%%{T-}%%{F-} %s\n' "$SHORT_SSID"
 else
-    printf '%%{F#89b4fa}%%{T6}󰈀%%{T-}%%{F-} %s\n' "$DEV"
+    printf '%%{F#89b4fa}%%{T6}󰈀%%{T-}%%{F-} %-12.12s\n' "$DEV"
 fi

@@ -94,5 +94,6 @@ link "$ROOT/wallpapers" "$HOME/Images/wallpapers"
 link_root "$ROOT/system/zramen.conf" /etc/sv/zramen/conf
 link_root "$ROOT/system/99-zram.conf" /etc/sysctl.d/99-zram.conf
 link_root "$ROOT/system/00-macbook-aspm.conf" /etc/tlp.d/00-macbook-aspm.conf
+link_root "$ROOT/system/zzz.d/40-lock.sh" /etc/zzz.d/suspend/40-lock.sh
 
 echo "Terminé. Sauvegardes (si --force) : $BACKUP"

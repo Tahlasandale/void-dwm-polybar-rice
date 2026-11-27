@@ -5,7 +5,10 @@ super + shift + s
 Print
     /home/bison/.local/bin/screenshot-area.sh
 
-# Historique du presse-papier (Win + Maj + V)
+# Historique du presse-papier (Ctrl + Maj + V et Win + Maj + V)
+control + shift + v
+    /home/bison/.local/bin/clipboard-history.sh
+
 super + shift + v
     /home/bison/.local/bin/clipboard-history.sh
 

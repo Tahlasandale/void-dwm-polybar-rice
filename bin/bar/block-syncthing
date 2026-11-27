@@ -26,7 +26,7 @@ case "${BLOCK_BUTTON:-0}" in
 esac
 
 if pgrep -x syncthing >/dev/null 2>&1; then
-    printf "%%{F#94e2d5}%%{T6}%%{T-}%%{F-}\n"
+    printf "%%{F#89b4fa}%%{T6}%%{T-}%%{F-}\n"
 else
     printf "%%{F#6c7086}%%{T6}%%{T-}%%{F-}\n"
 fi

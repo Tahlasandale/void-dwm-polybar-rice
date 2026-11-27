@@ -56,4 +56,4 @@ fi
 libinput-gestures &
 clipmenud &
 sxhkd &
-exec dbus-run-session sh -c 'dbus-update-activation-environment --all; dunst & exec dwm'
+exec dbus-run-session sh -c 'dbus-update-activation-environment --all; dunst & battery-notify.sh & exec dwm'

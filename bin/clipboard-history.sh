@@ -1,5 +1,5 @@
 #!/bin/sh
-# ~/.local/bin/clipboard-history.sh — Menu historique presse-papier (Ctrl + Maj + V / Win + Maj + V)
+# ~/.local/bin/clipboard-history.sh — Menu historique presse-papier (Win + Maj + V)
 
 # Harmoniser le répertoire avec clipmenud (lancé par .xinitrc)
 XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/tmp/run-user-$(id -u)}"

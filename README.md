@@ -63,11 +63,11 @@ pkill -x dwm   # puis relancer la session
 - Wi-Fi : le SSID est collé à l'icône ; clic gauche = connexions connues, clic droit = scan, le mot de passe est saisi dans dmenu puis enregistré par NetworkManager. Profil `eduroam` (PEAP/MSCHAPv2, identité `joseph.humbert@universite-paris-saclay.fr`, CA HARICA, `DNS:radius.di.u-psud.fr`, mot de passe stocké) présent dans la liste et connectable au clic.
 - Tailscale : `tailscaled` activé via runit, `bison` déclaré opérateur ; icône VPN seule dans la barre (bleu `#89b4fa` si actif, gris `#6c7086` si désactivé), bascule au clic + notification, URL d'auth copiée dans le presse-papiers. Désactivé au démarrage (`tailscale down` dans `.xinitrc`).
 - Syncthing : module dans la barre avec bascule au clic + notification (clic droit ouvre l'interface web), icône bleue `#89b4fa` comme les autres quand actif, grise sinon. Désactivé au démarrage (plus de lancement automatique dans `.xinitrc`).
-- Barre : îlots compacts (`format-padding = 0`), séparateurs à largeur fixe `%{O3}`/`%{O5}` au lieu des triangles, SSID/batterie/date à largeur fixe pour éviter tout décalage.
+- Barre : thème Cuts d'origine (`format-padding = 1`, séparateurs triangles `   `, glyphe power `󰐥`, SSID jusqu'à 18 caractères).
 - Verrouillage : `lock.sh` centre l'heure, la date et les messages d'état dans le cercle (`*{-pos}` + alignement 0, correction de la ligne de base).
-- Batterie : clic gauche alterne `%` / autonomie et affiche toutes les infos en notification (clic droit = infos sans bascule).
+- Batterie : clic gauche alterne `%` / autonomie et affiche toutes les infos en notification (clic droit = infos sans bascule). `battery-notify.sh` (lancé au login) alerte toutes les minutes en décharge à 20% ou moins, en urgence critique avec expiration ~50 s pour éviter l'empilement ; test sans décharge réelle via `BATTERY_TEST_CAPACITY=19 BATTERY_TEST_STATUS=Discharging battery-notify.sh --once`.
 - Firefox : `user.js` dans `~/.config/mozilla/firefox/<profil>/` (process count 4/1, déchargement des onglets inactifs, undo réduit à 3), appliqué au démarrage.
 - Bordures dwm : active `#94e2d5`, inactive `#11111b`, épaisseur 5 px.
-- Presse-papiers : `sxhkd` `Ctrl+Maj+V` (et `Win+Maj+V`) → `clipboard-history.sh` (`clipmenu`), `clipmenud` au login ; captures = image en CLIPBOARD + chemin en PRIMARY.
+- Presse-papiers : `Win+Maj+V` → `clipboard-history.sh` (`clipmenu`), `clipmenud` au login ; `Ctrl+V` et `Ctrl+Maj+V` collent directement dans Alacritty (le script recolle avec `Ctrl+Maj+V` après un choix) ; captures = image en CLIPBOARD + chemin en PRIMARY.
 - Yazi : wrapper qui force le driver Chafa sous X11/Alacritty.
 - `xdg-open` : wrapper local temporaire ; installer `xdg-utils` (`sudo xbps-install -S xdg-utils`) puis retirer le wrapper.

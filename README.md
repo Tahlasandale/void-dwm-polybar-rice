@@ -49,7 +49,7 @@ pkill -x dwm   # puis relancer la session
 - Rotation fonds : `Ctrl+!` → `next-wallpaper.sh`, dossier `~/Images/wallpapers`.
 - Polybar : style `cuts` (adi1090x), une seule barre active (`top` ; `[bar/main]` reste en config), fond ARGB `#3374c7ec` (alpha `0x33`) rendu translucide par Picom, modules `#11111b`, primaire `#94e2d5` ; dwm réserve 28 px en bas. Anciennes configs dans `backups/polybar-*.tar.gz`.
 - Barres : `Super+b` / `Alt+Maj+b` masque/affiche les barres via `toggle-bars.sh`.
-- Picom : `picom -b --backend glx` au login (transparence réelle ; fallback `xrender`).
+- Picom : `picom -b --backend glx` au login avec `config/picom/picom.conf` (lié dans `~/.config/picom/`) : coins arrondis 12 px (polybar et dmenu exclus), flou `dual_kawase` force 3 sur les fenêtres translucides, opacité 0,97 active / 0,95 inactive (Alacritty garde 0,88, Firefox reste opaque) ; fallback `xrender`.
 - Énergie & Autonomie : TLP 1.10.2 activé via runit. Optimisation PCIe ASPM dynamique via `system/00-macbook-aspm.conf` lié dans `/etc/tlp.d/` (`PCIE_ASPM_ON_BAT=powersave`, `PCIE_ASPM_ON_AC=default`). Mesures réelles de consommation au repos sur batterie à 50% de luminosité (1389/2777, Firefox fermé) :
   - Baseline initiale (scripts Polybar Python) : 8,98 W (~6,0h d'autonomie)
   - Polybar optimisée en pur shell (`8e27f6f`) : 5,06 W (~10,6h d'autonomie)

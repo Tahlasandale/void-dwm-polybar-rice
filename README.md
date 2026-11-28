@@ -57,7 +57,7 @@ pkill -x dwm   # puis relancer la session
   - Ventilateur piloté par `applesmc`.
 - zram : `zramen` (zstd, ~2 GiB, priorité 32767) activé via `/var/service/zramen`, conf liée depuis `system/zramen.conf`.
 - Swap zram : `vm.swappiness=100` et `vm.page-cluster=0` via `system/99-zram.conf`, lié dans `/etc/sysctl.d/` et appliqué au boot par `/etc/runit/core-services/08-sysctl.sh`. Compression mesurée : `DATA ≈ 3 × COMPR`.
-- dmenu : prompt aligné sur les entrées, palette Catppuccin + coins arrondis compilés.
+- dmenu : style de la maquette `~/Documents/Notes/tofi.html` — 40vw×40vh centré, coins arrondis 12 px, contour noir 4 px + bordure bleue `#89b4fa` 3 px, prompt et sélection bleus sur `#45475a`, police Maple Mono NF 11 (comme Alacritty), opacité 0,90 via Picom. Les menus compacts (`power-menu`, `sudo-askpass`) gardent leur hauteur réduite via `-l`.
 - Alimentation : clic droit sur l'horloge → `bar/power-menu` (fenêtre dmenu, plus de terminal) ; le mot de passe sudo est demandé par `bar/sudo-askpass` via dmenu. Le bouton power à droite de la barre ouvre le même menu.
 - Réveil : `system/zzz.d/40-lock.sh` (lié dans `/etc/zzz.d/suspend/`) lance `lock.sh` et attend que `i3lock` soit actif (≤ 5 s) avant de laisser `zzz` suspendre : l'écran est déjà verrouillé au réveil, sans course entre le verrouillage et la mise en veille.
 - Wi-Fi : le SSID est collé à l'icône ; clic gauche = connexions connues, clic droit = scan, le mot de passe est saisi dans dmenu puis enregistré par NetworkManager. Profil `eduroam` (PEAP/MSCHAPv2, identité `joseph.humbert@universite-paris-saclay.fr`, CA HARICA, `DNS:radius.di.u-psud.fr`, mot de passe stocké) présent dans la liste et connectable au clic.

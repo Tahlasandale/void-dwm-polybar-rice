@@ -28,7 +28,11 @@
 #define TEXTW(X)              (drw_fontset_getwidth(drw, (X)) + lrpad)
 
 /* enums */
-enum { SchemeNorm, SchemeSel, SchemeOut, SchemeLast }; /* color schemes */
+enum { SchemeNorm, SchemeSel, SchemeOut, SchemePrompt, SchemeFrame,
+       SchemeBorder, SchemeLast }; /* color schemes */
+
+/* cadre: 4px outline noir + 3px bordure + 4px outline noir interne */
+#define FRAME 11
 
 struct item {
 	char *text;
@@ -57,6 +61,18 @@ static Drw *drw;
 static Clr *scheme[SchemeLast];
 
 #include "config.h"
+
+static void
+fillround(Clr *c, int x, int y, int w, int h, int r)
+{
+	XSetForeground(dpy, drw->gc, c->pixel);
+	XFillRectangle(dpy, drw->drawable, drw->gc, x + r, y, w - 2 * r, h);
+	XFillRectangle(dpy, drw->drawable, drw->gc, x, y + r, w, h - 2 * r);
+	XFillArc(dpy, drw->drawable, drw->gc, x, y, 2 * r, 2 * r, 0, 360 * 64);
+	XFillArc(dpy, drw->drawable, drw->gc, x + w - 2 * r, y, 2 * r, 2 * r, 0, 360 * 64);
+	XFillArc(dpy, drw->drawable, drw->gc, x, y + h - 2 * r, 2 * r, 2 * r, 0, 360 * 64);
+	XFillArc(dpy, drw->drawable, drw->gc, x + w - 2 * r, y + h - 2 * r, 2 * r, 2 * r, 0, 360 * 64);
+}
 
 static int (*fstrncmp)(const char *, const char *, size_t) = strncmp;
 static char *(*fstrstr)(const char *, const char *) = strstr;
@@ -89,7 +105,7 @@ calcoffsets(void)
 	if (lines > 0)
 		n = lines * bh;
 	else
-		n = mw - (promptw + inputw + TEXTW("<") + TEXTW(">"));
+		n = mw - 2 * FRAME - (promptw + inputw + TEXTW("<") + TEXTW(">"));
 	/* calculate which items will begin the next page and previous page */
 	for (i = 0, next = curr; next; next = next->right)
 		if ((i += (lines > 0) ? bh : textw_clamp(next->text, n)) > n)
@@ -97,15 +113,6 @@ calcoffsets(void)
 	for (i = 0, prev = curr; prev && prev->left; prev = prev->left)
 		if ((i += (lines > 0) ? bh : textw_clamp(prev->left->text, n)) > n)
 			break;
-}
-
-static int
-max_textw(void)
-{
-	int len = 0;
-	for (struct item *item = items; item && item->text; item++)
-		len = MAX(TEXTW(item->text), len);
-	return len;
 }
 
 static void
@@ -160,45 +167,48 @@ drawmenu(void)
 {
 	unsigned int curpos;
 	struct item *item;
-	int x = 0, y = 0, w;
+	int x = FRAME, y = FRAME, w;
 
-	drw_setscheme(drw, scheme[SchemeNorm]);
-	drw_rect(drw, 0, 0, mw, mh, 1, 1);
+	/* cadre arrondi: outline noir 4px, bordure 3px, outline noir interne 4px */
+	fillround(&scheme[SchemeFrame][ColBg], 0, 0, mw, mh, 12);
+	fillround(&scheme[SchemeBorder][ColBg], 4, 4, mw - 8, mh - 8, 8);
+	fillround(&scheme[SchemeFrame][ColBg], 7, 7, mw - 14, mh - 14, 5);
+	fillround(&scheme[SchemeNorm][ColBg], FRAME, FRAME, mw - 2 * FRAME, mh - 2 * FRAME, 1);
 
 	if (prompt && *prompt) {
-		drw_setscheme(drw, scheme[SchemeSel]);
-		x = drw_text(drw, x, 0, promptw, bh, lrpad / 2, prompt, 0);
+		drw_setscheme(drw, scheme[SchemePrompt]);
+		x = drw_text(drw, x, FRAME, promptw, bh, lrpad / 2, prompt, 0);
 	}
 	/* draw input field */
-	w = (lines > 0 || !matches) ? mw - x : inputw;
+	w = (lines > 0 || !matches) ? mw - FRAME - x : inputw;
 	drw_setscheme(drw, scheme[SchemeNorm]);
-	drw_text(drw, x, 0, w, bh, lrpad / 2, text, 0);
+	drw_text(drw, x, FRAME, w, bh, lrpad / 2, text, 0);
 
 	curpos = TEXTW(text) - TEXTW(&text[cursor]);
-	if ((curpos += lrpad / 2 - 1) < w) {
+	if ((curpos += lrpad / 2 - 1) < (unsigned int)w) {
 		drw_setscheme(drw, scheme[SchemeNorm]);
-		drw_rect(drw, x + curpos, 2, 2, bh - 4, 1, 0);
+		drw_rect(drw, x + curpos, FRAME + 2, 2, bh - 4, 1, 0);
 	}
 
 	if (lines > 0) {
 		/* draw vertical list */
 		for (item = curr; item != next; item = item->right)
-			drawitem(item, 0, y += bh, mw);
+			drawitem(item, FRAME, y += bh, mw - 2 * FRAME);
 	} else if (matches && curr) {
 		/* draw horizontal list */
-		x += inputw;
+		x = FRAME + inputw;
 		w = TEXTW("<");
 		if (curr->left) {
 			drw_setscheme(drw, scheme[SchemeNorm]);
-			drw_text(drw, x, 0, w, bh, lrpad / 2, "<", 0);
+			drw_text(drw, x, FRAME, w, bh, lrpad / 2, "<", 0);
 		}
 		x += w;
 		for (item = curr; item != next; item = item->right)
-			x = drawitem(item, x, 0, textw_clamp(item->text, mw - x - TEXTW(">")));
+			x = drawitem(item, x, FRAME, textw_clamp(item->text, mw - FRAME - x - TEXTW(">")));
 		if (next) {
 			w = TEXTW(">");
 			drw_setscheme(drw, scheme[SchemeNorm]);
-			drw_text(drw, mw - w, 0, w, bh, lrpad / 2, ">", 0);
+			drw_text(drw, mw - FRAME - w, FRAME, w, bh, lrpad / 2, ">", 0);
 		}
 	}
 	drw_map(drw, win, 0, 0, mw, mh);
@@ -734,7 +744,6 @@ setup(void)
 	/* calculate menu geometry */
 	bh = drw->fonts->h + 2;
 	lines = MAX(lines, 0);
-	mh = (lines + 1) * bh;
 	promptw = (prompt && *prompt) ? TEXTW(prompt) : 0;
 #ifdef XINERAMA
 	i = 0;
@@ -767,15 +776,16 @@ setup(void)
 		if (i >= n)
 			i = 0;
 
-		if (centered) {
-			mw = MIN(MAX(max_textw() + promptw, min_width), info[i].width);
-			x = info[i].x_org + ((info[i].width  - mw) / 2);
-			y = info[i].y_org + ((info[i].height - mh) / 2);
+		/* fenêtre = 40vw x 40vh (hauteur auto sauf -l explicite) */
+		mw = (int)(info[i].width * 0.4);
+		if (lines == 0) {
+			mh = (int)(info[i].height * 0.4);
+			lines = MAX((mh - 2 * FRAME) / bh - 1, 1);
 		} else {
-			x = info[i].x_org;
-			y = info[i].y_org + (topbar ? 0 : info[i].height - mh);
-			mw = info[i].width;
+			mh = (lines + 1) * bh + 2 * FRAME;
 		}
+		x = info[i].x_org + ((info[i].width  - mw) / 2);
+		y = info[i].y_org + ((info[i].height - mh) / 2);
 
 		XFree(info);
 	} else
@@ -785,18 +795,18 @@ setup(void)
 			die("could not get embedding window attributes: 0x%lx",
 			    parentwin);
 
-		if (centered) {
-			mw = MIN(MAX(max_textw() + promptw, min_width), wa.width);
-			x = (wa.width  - mw) / 2;
-			y = (wa.height - mh) / 2;
+		mw = (int)(wa.width * 0.4);
+		if (lines == 0) {
+			mh = (int)(wa.height * 0.4);
+			lines = MAX((mh - 2 * FRAME) / bh - 1, 1);
 		} else {
-			x = 0;
-			y = topbar ? 0 : wa.height - mh;
-			mw = wa.width;
+			mh = (lines + 1) * bh + 2 * FRAME;
 		}
+		x = (wa.width  - mw) / 2;
+		y = (wa.height - mh) / 2;
 	}
 	promptw = (prompt && *prompt) ? TEXTW(prompt) : 0;
-	inputw = mw / 3; /* input width: ~33% of monitor width */
+	inputw = (mw - 2 * FRAME) / 3; /* input width: ~33% of content width */
 	match();
 
 	/* create menu window */

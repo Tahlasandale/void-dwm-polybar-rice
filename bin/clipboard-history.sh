@@ -14,8 +14,8 @@ export CM_HISTLENGTH=50
 ACTIVE_WIN=$(xdotool getactivewindow 2>/dev/null || true)
 
 # Menu dmenu Catppuccin Mocha
-if clipmenu -c -l 14 -i -p "📋 Presse-papier:" \
-    -nb "#1e1e2e" -nf "#cdd6f4" -sb "#94e2d5" -sf "#11111b"; then
+if clipmenu -c -i -p "📋 Presse-papier:" \
+    -nb "#1e1e2e" -nf "#cdd6f4" -sb "#45475a" -sf "#89b4fa"; then
 
     # Si sélectionné, refocaliser et coller
     if [ -n "$ACTIVE_WIN" ]; then

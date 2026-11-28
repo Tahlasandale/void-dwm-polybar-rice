@@ -4,8 +4,8 @@ import os, sys, glob, subprocess
 # 1. Palette fixe (Catppuccin Mocha)
 nb = "#1e1e2e"
 nf = "#cdd6f4"
-sb = "#94e2d5"
-sf = "#1e1e2e"
+sb = "#45475a"
+sf = "#89b4fa"
 
 # 2. Indexation des applications (.desktop)
 apps = {}
@@ -66,9 +66,8 @@ subprocess.run(["pkill", "-x", "dmenu"], stderr=subprocess.DEVNULL)
 dmenu_cmd = [
     os.path.expanduser("~/.local/bin/dmenu"),
     "-c",
-    "-l", "14",
     "-i",
-    "-p", "Applications:",
+    "-p", "run: ",
     "-nb", nb,
     "-nf", nf,
     "-sb", sb,

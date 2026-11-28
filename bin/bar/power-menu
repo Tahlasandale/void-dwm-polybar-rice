@@ -9,8 +9,8 @@ DMENU="$HOME/.local/bin/dmenu"
 
 NB="#1e1e2e"
 NF="#cdd6f4"
-SB="#94e2d5"
-SF="#11111b"
+SB="#45475a"
+SF="#89b4fa"
 
 CHOICE=$(printf '%s\n' \
     '󰌾 Verrouiller' \

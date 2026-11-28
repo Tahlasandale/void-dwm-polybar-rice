@@ -67,7 +67,7 @@ pkill -x dwm   # puis relancer la session
 - Verrouillage : `lock.sh` centre l'heure, la date et les messages d'état dans le cercle (`*{-pos}` + alignement 0, correction de la ligne de base).
 - Batterie : clic gauche alterne `%` / autonomie et affiche toutes les infos en notification (clic droit = infos sans bascule). `battery-notify.sh` (lancé au login) alerte toutes les minutes en décharge à 20% ou moins, en urgence critique avec expiration ~50 s pour éviter l'empilement ; test sans décharge réelle via `BATTERY_TEST_CAPACITY=19 BATTERY_TEST_STATUS=Discharging battery-notify.sh --once`.
 - Firefox : `user.js` dans `~/.config/mozilla/firefox/<profil>/` (process count 4/1, déchargement des onglets inactifs, undo réduit à 3), appliqué au démarrage.
-- Bordures dwm : active `#94e2d5`, inactive `#11111b`, épaisseur 5 px.
+- Bordures dwm : active `#94e2d5`, inactive `#11111b`, épaisseur 5 px. Le pixel de bordure est forcé en ARGB opaque (`| 0xff000000` dans `src/dwm/dwm.c`) : sans alpha, Picom en backend GLX interprète la couleur comme prémultipliée et rend un contour cyan/blanc très clair au lieu de la teinte Catppuccin. Redémarrer dwm (`Super+Maj+R`) après `make -C src/dwm`.
 - Presse-papiers : `Win+Maj+V` ouvre l'historique des copies précédentes (`clipboard-history.sh` → `clipmenu`, jusqu'à 50 entrées ; `clipmenud` au login) ; `Ctrl+V` et `Ctrl+Maj+V` collent directement dans Alacritty (le script recolle avec `Ctrl+Maj+V` après un choix) ; captures = image en CLIPBOARD + chemin en PRIMARY.
 - Yazi : wrapper qui force le driver Chafa sous X11/Alacritty.
 - `xdg-open` : wrapper local temporaire ; installer `xdg-utils` (`sudo xbps-install -S xdg-utils`) puis retirer le wrapper.
